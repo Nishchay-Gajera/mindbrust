@@ -171,7 +171,7 @@
     line-height: 1.6;
 }
 
-.faq-item.active .faq-answer {
+                .faq-item.open .faq-answer {
     padding-top: 0.5rem;
     padding-bottom: 2rem !important;
 }
