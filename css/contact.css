@@ -1,0 +1,192 @@
+/* css/contact.css */
+
+.contact-hero {
+    background: linear-gradient(105deg, #4f46e5, #7c3aed, #a855f7);
+    padding: 4rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-content-wrapper {
+    position: relative;
+    z-index: 10;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+/* Contact Cards (Sales, Support) */
+.contact-card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease-in-out;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 9999px;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.card-description {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.card-email {
+    font-weight: 600;
+    color: #4f46e5;
+    transition: color 0.2s ease;
+}
+
+.card-email:hover {
+    color: #3730a3;
+}
+
+/* Form Styles */
+.form-card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    border: 1px solid #e5e7eb;
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.form-input.border-red-500 {
+    border-color: #ef4444;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background-color: #4f46e5;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+}
+
+.submit-button:disabled {
+    background-color: #a5b4fc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    min-height: 1.25rem;
+}
+
+/* FAQ Section */
+.faq-section {
+    background-color: #f9fafb;
+    padding: 4rem 0;
+}
+
+.faq-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.faq-question:hover {
+    background-color: #f9fafb;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    padding: 0 1.5rem; /* Horizontal padding only */
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.faq-item.active .faq-answer {
+    padding-top: 0.5rem;
+    padding-bottom: 2rem !important;
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        padding: 1.5rem;
+    }
+}
+
