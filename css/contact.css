@@ -171,16 +171,16 @@
     line-height: 1.6;
 }
 
-                .faq-item.open .faq-answer {
+    .faq-item.open .faq-answer {
     padding-top: 0.5rem;
-    padding-bottom: 2rem !important;
+    padding-bottom: 4.5rem;
 }
 
 .faq-icon {
     transition: transform 0.3s ease;
 }
 
-.faq-item.active .faq-icon {
+.faq-item.open .faq-icon {
     transform: rotate(180deg);
 }
 
@@ -188,5 +188,4 @@
     .form-card {
         padding: 1.5rem;
     }
-}
-
+    }
