@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image to WebP Converter - Mindbrust</title>
-    <meta name="description" content="Convert JPG, PNG, and other images to the modern WebP format. Fast, free, and secure online converter.">
-    
+    <title>Mindbrust - Free & Simple Online Tools</title>
+    <meta name="description" content="A collection of free, simple, and powerful online tools to help you with your daily tasks. Convert images, edit PDFs, and more.">
+
     <!-- External CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    
+    <link rel="stylesheet" href="css/homepage.css">
+
     <!-- External JavaScript Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
+
     <!-- Configure Tailwind -->
     <script>
         tailwind.config = {
@@ -20,98 +20,105 @@
         }
     </script>
 </head>
-<body class="h-full antialiased text-gray-800 bg-gray-100">
-    <!-- Ad Blocker Detection -->
-    <div id="adblock-overlay" class="adblock-overlay hidden">
-        <div class="adblock-modal">
-            <div class="adblock-content">
-                <div class="adblock-icon">⚠️</div>
-                <h2>Ad Blocker Detected</h2>
-                <p>To use our free tools, please disable your ad blocker for this site. We use ads to keep our services free and accessible to everyone.</p>
-                <div class="adblock-buttons">
-                    <button id="adblock-refresh" class="adblock-btn primary">I've Disabled It</button>
-                    <button id="adblock-continue" class="adblock-btn secondary">Continue Anyway</button>
+<body class="bg-gray-50">
+
+    <div id="page-wrapper" class="flex flex-col min-h-screen">
+        <!-- Header will be loaded here -->
+        <div id="header-container" class="flex-shrink-0"></div>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">Simple Tools for Complex Tasks</h1>
+                    <p class="mt-6 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Your one-stop destination for free, fast, and secure online utilities. No registration, no hassle.</p>
+                    <a href="#tools" class="mt-8 inline-block bg-white text-indigo-600 font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-gray-100 transition-colors duration-300">Explore Tools</a>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Custom Message Box -->
-    <div id="message-box" class="message-box"></div>
+            <!-- Tools Section -->
+            <section id="tools" class="py-16 sm:py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-extrabold text-gray-900">Our Collection of Tools</h2>
+                        <p class="mt-4 text-lg text-gray-600">Designed for simplicity and power.</p>
+                    </div>
+                    <div class="mt-12 flex justify-center">
+                        <!-- Tool Card: WebP Converter -->
+                         <!-- mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 -->
+                        <a href="webp-converter.html" class="tool-card">
+                            <div class="tool-card-icon bg-indigo-100 text-indigo-600">
+                                <!-- Icon for WebP -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h3 class="tool-card-title">WebP Converter</h3>
+                            <p class="tool-card-description">Convert JPG, PNG, and more to the modern, efficient WebP format.</p>
+                        </a>
 
-    <!-- Header will be loaded here -->
-    <div id="header-container"></div>
 
-    <div class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 mt-16">
-        <main class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-6 sm:p-8">
-            <!-- Image Converter Block -->
-            <div class="flex items-center justify-center mb-6 sm:mb-8">
-                <div class="flex items-center space-x-2">
-                    <!-- Custom SVG Icon for WebP Converter -->
-                    <svg class="h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 15H7v-2h10v2zm0-4H7v-2h10v2zM7 8h10V6H7v2z"/>
-                    </svg>
-                    <h1 class="text-3xl font-bold text-gray-900">WebP Converter</h1>
+                        <!-- <div class="tool-card coming-soon">
+                            <div class="tool-card-icon bg-red-100 text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            </div>
+                            <h3 class="tool-card-title">PDF Tools</h3>
+                            <p class="tool-card-description">Merge, split, compress, and edit your PDF files with ease.</p>
+                        </div>
+
+                        <div class="tool-card coming-soon">
+                            <div class="tool-card-icon bg-green-100 text-green-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg>
+                            </div>
+                            <h3 class="tool-card-title">Image Compressor</h3>
+                            <p class="tool-card-description">Reduce the file size of your images without losing quality.</p>
+                        </div>
+                        
+                        <div class="tool-card coming-soon">
+                            <div class="tool-card-icon bg-yellow-100 text-yellow-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l1.414 1.414M17 5l1.414-1.414M19 12a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </div>
+                            <h3 class="tool-card-title">Background Remover</h3>
+                            <p class="tool-card-description">Automatically remove the background from any image.</p>
+                        </div> -->
+                    </div>
                 </div>
-            </div>
-            <div class="text-center mb-6 sm:mb-8">
-                 <p class="text-gray-500">Convert JPG, PNG, and other images to the modern WebP format.</p>
-            </div>
-
-            <!-- File Input Area -->
-            <div class="relative mb-6">
-                <input type="file" id="file-input" class="file-input" multiple accept=".png, .jpg, .jpeg, .gif, .bmp, .svg" />
-                <label for="file-input" id="file-label" class="file-label text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 21v-8M17 16l-5 5-5-5"/>
-                    </svg>
-                    <span class="text-lg font-medium">Drag & drop images here or click to browse</span>
-                    <span class="text-sm mt-1">Supports bulk conversion</span>
-                </label>
-            </div>
-
-            <!-- Quality Slider -->
-            <div class="mb-6">
-                <label for="quality-slider" class="block text-sm font-medium text-gray-700 mb-2">
-                    Quality: <span id="quality-value">80</span>%
-                </label>
-                <input type="range" id="quality-slider" min="1" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
-            </div>
-
-            <!-- File List & Individual Progress -->
-            <div id="file-list-container" class="mb-6 hidden">
-                <h2 class="text-lg font-semibold text-gray-900 mb-2">Selected Files</h2>
-                <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button id="convert-button" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
-                    Start Conversion
-                </button>
-                <button id="download-all-button" class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden disabled:bg-green-400 disabled:cursor-not-allowed" disabled>
-                    Download All as Zip
-                </button>
-                <button id="clear-button" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors">
-                    Clear
-                </button>
-            </div>
+            </section>
             
-            <!-- Hidden Canvas for Conversion -->
-            <canvas id="conversion-canvas" class="hidden"></canvas>
+            <!-- Features Section -->
+            <section class="bg-white py-16 sm:py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                     <div class="text-center">
+                        <h2 class="text-3xl font-extrabold text-gray-900">Why Choose Mindbrust?</h2>
+                        <p class="mt-4 text-lg text-gray-600">We focus on what matters most to you.</p>
+                    </div>
+                    <div class="mt-12 grid gap-10 md:grid-cols-3">
+                        <div class="feature-item text-center">
+                             <div class="feature-icon text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>
+                            <h3 class="feature-title">Blazing Fast</h3>
+                            <p class="feature-description">Our tools are optimized for speed, so you can get your tasks done in seconds, not minutes.</p>
+                        </div>
+                         <div class="feature-item text-center">
+                             <div class="feature-icon text-green-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg></div>
+                            <h3 class="feature-title">Privacy Focused</h3>
+                            <p class="feature-description">We respect your privacy. All uploaded files are automatically deleted from our servers within hours.</p>
+                        </div>
+                         <div class="feature-item text-center">
+                             <div class="feature-icon text-yellow-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8z" /></svg></div>
+                            <h3 class="feature-title">Completely Free</h3>
+                            <p class="feature-description">No subscriptions, no hidden fees. All our tools are 100% free to use for everyone, forever.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
-    </div>
-
-    <!-- Footer will be loaded here -->
-    <div id="footer-container"></div>
-
-    <!-- Ad for Ad Blocker Detection (hidden) -->
-    <div class="ad-test" style="width: 1px; height: 1px; position: absolute; left: -1000px;">
-        <ins class="adsbygoogle" style="display: block; width: 1px; height: 1px;"></ins>
+        
+        <!-- Footer will be loaded here -->
+        <div id="footer-container" class="flex-shrink-0"></div>
     </div>
 
     <!-- External JavaScript -->
-    <script src="js/adblock-detector.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/homepage.js"></script>
+
 </body>
 </html>

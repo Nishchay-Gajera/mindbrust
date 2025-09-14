@@ -1,6 +1,6 @@
 /**
- * Main Application Script
- * Handles WebP conversion functionality and component loading
+ * WebP Converter Script
+ * Handles WebP conversion functionality and component loading for the converter page
  */
 
 class WebPConverter {
