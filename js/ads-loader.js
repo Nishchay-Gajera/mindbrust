@@ -16,7 +16,7 @@
   const gtagInitScript = document.createElement('script');
   gtagInitScript.innerHTML = `
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.pussssssh(arguments);}
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-6LMLD4X2R9');
   `;
