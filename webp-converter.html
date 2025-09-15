@@ -7,15 +7,28 @@
     <title>Image to WebP Converter - Mindbrust</title>
     <meta name="description"
         content="Convert JPG, PNG, and other images to the modern WebP format. Fast, free, and secure online converter.">
+    <meta name="keywords"
+        content="webp converter, image to webp, jpg to webp, png to webp, online converter, free converter">
+    <link rel="canonical" href="https://www.mindbrust.com/webp-converter.html">
 
-    <!-- External CSS -->
+    <meta property="og:title" content="Image to WebP Converter - Mindbrust">
+    <meta property="og:description"
+        content="Convert JPG, PNG, and other images to the modern WebP format. Fast, free, and secure.">
+    <meta property="og:image" content="https://www.mindbrust.com/assets/images/logo.svg">
+    <meta property="og:url" content="https://www.mindbrust.com/webp-converter.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Image to WebP Converter - Mindbrust">
+    <meta name="twitter:description"
+        content="Convert JPG, PNG, and other images to the modern WebP format. Fast, free, and secure.">
+    <meta name="twitter:image" content="https://www.mindbrust.com/assets/images/logo.svg">
+
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- External JavaScript Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <!-- Configure Tailwind -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,10 +36,24 @@
     </script>
     <script src="js/ads-loader.js" defer></script>
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "WebP Converter",
+      "description": "Convert various image formats to the modern WebP format.",
+      "url": "https://www.mindbrust.com/webp-converter.html",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
 </head>
 
 <body class="h-full antialiased text-gray-800 bg-gray-100">
-    <!-- Ad Blocker Detection -->
     <div id="adblock-overlay" class="adblock-overlay hidden">
         <div class="adblock-modal">
             <div class="adblock-content">
@@ -42,18 +69,14 @@
         </div>
     </div>
 
-    <!-- Custom Message Box -->
     <div id="message-box" class="message-box"></div>
 
-    <!-- Header will be loaded here -->
     <div id="header-container"></div>
 
     <div class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 mt-16">
         <main class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-6 sm:p-8">
-            <!-- Image Converter Block -->
             <div class="flex items-center justify-center mb-6 sm:mb-8">
                 <div class="flex items-center space-x-2">
-                    <!-- Custom SVG Icon for WebP Converter -->
                     <svg class="h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                         fill="currentColor">
                         <path
@@ -66,7 +89,6 @@
                 <p class="text-gray-500">Convert JPG, PNG, and other images to the modern WebP format.</p>
             </div>
 
-            <!-- File Input Area -->
             <div class="relative mb-6">
                 <input type="file" id="file-input" class="file-input" multiple
                     accept=".png, .jpg, .jpeg, .gif, .bmp, .svg" />
@@ -81,7 +103,6 @@
                 </label>
             </div>
 
-            <!-- Quality Slider -->
             <div class="mb-6">
                 <label for="quality-slider" class="block text-sm font-medium text-gray-700 mb-2">
                     Quality: <span id="quality-value">80</span>%
@@ -90,13 +111,11 @@
                     class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
             </div>
 
-            <!-- File List & Individual Progress -->
             <div id="file-list-container" class="mb-6 hidden">
                 <h2 class="text-lg font-semibold text-gray-900 mb-2">Selected Files</h2>
                 <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <button id="convert-button"
                     class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
@@ -113,20 +132,16 @@
                 </button>
             </div>
 
-            <!-- Hidden Canvas for Conversion -->
             <canvas id="conversion-canvas" class="hidden"></canvas>
         </main>
     </div>
 
-    <!-- Footer will be loaded here -->
     <div id="footer-container"></div>
 
-    <!-- Ad for Ad Blocker Detection (hidden) -->
     <div class="ad-test" style="width: 1px; height: 1px; position: absolute; left: -1000px;">
         <ins class="adsbygoogle" style="display: block; width: 1px; height: 1px;"></ins>
     </div>
 
-    <!-- External JavaScript -->
     <script src="js/adblock-detector.js"></script>
     <script src="js/webp-converter.js"></script>
 </body>
