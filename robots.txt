@@ -1,0 +1,18 @@
+# Allow all web crawlers and bots
+User-agent: *
+Disallow:
+
+# Specifically allow Google AdSense bot
+User-agent: Mediapartners-Google
+Disallow:
+
+# Allow AI bots like Google's and others
+User-agent: Google-Extended
+Disallow:
+User-agent: GPTBot
+Disallow:
+User-agent: CCBot
+Disallow:
+
+# Location of the sitemap
+Sitemap: https://www.mindbrust.com/sitemap.xml
