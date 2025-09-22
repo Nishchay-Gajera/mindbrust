@@ -140,7 +140,7 @@ class ImageCompressor {
             this.downloadAllBtn.addEventListener('click', () => this.downloadAllFiles());
         }
 
-        // File list delegation
+        // File list delegation for dynamic content
         if (this.fileList) {
             this.fileList.addEventListener('click', (e) => this.handleFileAction(e));
         }
@@ -236,7 +236,7 @@ class ImageCompressor {
         card.innerHTML = `
             <div class="file-header">
                 <div class="file-info">
-                    <div class="file-name">${fileData.file.name}</div>
+                    <div class="file-name" title="${fileData.file.name}">${fileData.file.name}</div>
                     <div class="file-details">
                         ${this.formatBytes(fileData.originalSize)} 
                         ${fileData.compressedSize > 0 ? `→ ${this.formatBytes(fileData.compressedSize)}` : ''}
@@ -244,7 +244,7 @@ class ImageCompressor {
                     </div>
                 </div>
                 <div class="file-actions">
-                    <button class="remove-file-btn" data-action="remove">
+                    <button class="remove-file-btn" data-action="remove" data-file-id="${fileData.id}" title="Remove file">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -274,7 +274,7 @@ class ImageCompressor {
                         <div class="result-value success">${this.formatBytes(fileData.compressedSize)}</div>
                     </div>
                 </div>
-                <button class="download-button" data-action="download">
+                <button class="download-button" data-action="download" data-file-id="${fileData.id}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7,10 12,15 17,10"></polyline>
@@ -427,72 +427,82 @@ class ImageCompressor {
         const outputFormat = this.getOutputFormat(originalFile.type);
         const mimeType = this.getMimeType(outputFormat);
 
-        // Binary search for optimal quality
-        let minQuality = 0.1;
-        let maxQuality = 1.0;
-        let bestBlob = null;
-        let iterations = 0;
-        const maxIterations = 15;
+        // Enable high-quality rendering
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
 
-        while (iterations < maxIterations && Math.abs(maxQuality - minQuality) > 0.01) {
-            const quality = (minQuality + maxQuality) / 2;
-            
-            // Draw image
+        // First try with high quality (0.85-1.0)
+        let bestBlob = null;
+        let bestQuality = 1.0;
+
+        // Try high quality first (preserve most quality)
+        for (let quality = 0.95; quality >= 0.75; quality -= 0.05) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(img, 0, 0);
 
-            // Convert to blob synchronously for size check
-            const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = this.canvas.width;
-            tempCanvas.height = this.canvas.height;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.putImageData(imageData, 0, 0);
-
-            // Create blob with current quality
-            const dataURL = tempCanvas.toDataURL(mimeType, quality);
+            const dataURL = this.canvas.toDataURL(mimeType, quality);
             const blob = this.dataURLToBlob(dataURL);
 
-            if (blob.size <= targetSize || quality <= minQuality + 0.01) {
+            if (blob.size <= targetSize) {
                 bestBlob = blob;
-                if (blob.size <= targetSize) {
-                    minQuality = quality;
-                } else {
-                    break;
-                }
-            } else {
-                maxQuality = quality;
+                bestQuality = quality;
+                break;
             }
-
-            iterations++;
         }
 
-        // If we couldn't get small enough, try resizing
+        // If high quality didn't work, try binary search with better range
+        if (!bestBlob) {
+            let minQuality = 0.4; // Don't go below 40% quality initially
+            let maxQuality = 0.75;
+            let iterations = 0;
+            const maxIterations = 12;
+
+            while (iterations < maxIterations && Math.abs(maxQuality - minQuality) > 0.02) {
+                const quality = (minQuality + maxQuality) / 2;
+                
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(img, 0, 0);
+
+                const dataURL = this.canvas.toDataURL(mimeType, quality);
+                const blob = this.dataURLToBlob(dataURL);
+
+                if (blob.size <= targetSize) {
+                    bestBlob = blob;
+                    bestQuality = quality;
+                    minQuality = quality;
+                } else {
+                    maxQuality = quality;
+                }
+
+                iterations++;
+            }
+        }
+
+        // If still no success, try smart resizing with quality preservation
         if (!bestBlob || bestBlob.size > targetSize) {
-            return this.compressWithResize(img, originalFile, targetSize, mimeType);
+            return this.compressWithSmartResize(img, originalFile, targetSize, mimeType);
         }
 
         return { blob: bestBlob };
     }
 
-    compressWithResize(img, originalFile, targetSize, mimeType) {
-        let scale = 1.0;
-        const minScale = 0.1;
+    compressWithSmartResize(img, originalFile, targetSize, mimeType) {
         let bestBlob = null;
-
-        while (scale >= minScale) {
-            const newWidth = Math.floor(img.width * scale);
-            const newHeight = Math.floor(img.height * scale);
-
-            this.canvas.width = newWidth;
-            this.canvas.height = newHeight;
-            this.ctx.clearRect(0, 0, newWidth, newHeight);
-            this.ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-            // Try different qualities for this size
-            const qualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+        
+        // Calculate the reduction ratio needed
+        const originalDataURL = this.canvas.toDataURL(mimeType, 0.9);
+        const originalSize = this.dataURLToBlob(originalDataURL).size;
+        const reductionNeeded = targetSize / originalSize;
+        
+        // If we need less than 50% reduction, prefer quality reduction over resizing
+        if (reductionNeeded > 0.5) {
+            // Try moderate quality reduction first
+            const qualities = [0.8, 0.7, 0.6, 0.5, 0.45, 0.4, 0.35, 0.3];
             
             for (const quality of qualities) {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(img, 0, 0);
+                
                 const dataURL = this.canvas.toDataURL(mimeType, quality);
                 const blob = this.dataURLToBlob(dataURL);
 
@@ -501,18 +511,105 @@ class ImageCompressor {
                     break;
                 }
             }
-
-            if (bestBlob) break;
-            scale -= 0.1;
         }
 
-        // If still too large, return the smallest we could achieve
+        // If quality reduction didn't work, try smart resizing
         if (!bestBlob) {
-            const dataURL = this.canvas.toDataURL(mimeType, 0.1);
+            // Calculate optimal scale to maintain aspect ratio
+            let scale = Math.sqrt(reductionNeeded);
+            scale = Math.max(scale, 0.3); // Don't go below 30% of original size
+            
+            const resizeSteps = [scale, scale * 0.9, scale * 0.8, scale * 0.7, scale * 0.6];
+            
+            for (const currentScale of resizeSteps) {
+                const newWidth = Math.floor(img.width * currentScale);
+                const newHeight = Math.floor(img.height * currentScale);
+
+                // Ensure minimum dimensions
+                if (newWidth < 100 || newHeight < 100) continue;
+
+                // Create a temporary canvas for resizing with better quality
+                const resizeCanvas = document.createElement('canvas');
+                const resizeCtx = resizeCanvas.getContext('2d');
+                
+                resizeCanvas.width = newWidth;
+                resizeCanvas.height = newHeight;
+                
+                // Enable high-quality resizing
+                resizeCtx.imageSmoothingEnabled = true;
+                resizeCtx.imageSmoothingQuality = 'high';
+                
+                // Use step-down resizing for better quality on large reductions
+                if (currentScale < 0.5) {
+                    this.stepDownResize(img, resizeCanvas, resizeCtx, newWidth, newHeight);
+                } else {
+                    resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
+                }
+
+                // Try different qualities with the resized image
+                const resizeQualities = [0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6];
+                
+                for (const quality of resizeQualities) {
+                    const dataURL = resizeCanvas.toDataURL(mimeType, quality);
+                    const blob = this.dataURLToBlob(dataURL);
+
+                    if (blob.size <= targetSize) {
+                        bestBlob = blob;
+                        break;
+                    }
+                }
+                
+                if (bestBlob) break;
+            }
+        }
+
+        // Last resort: aggressive compression but maintain some quality
+        if (!bestBlob) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0);
+            
+            const dataURL = this.canvas.toDataURL(mimeType, 0.25);
             bestBlob = this.dataURLToBlob(dataURL);
         }
 
         return { blob: bestBlob };
+    }
+
+    stepDownResize(img, targetCanvas, targetCtx, targetWidth, targetHeight) {
+        // Step-down resizing for better quality
+        let currentCanvas = document.createElement('canvas');
+        let currentCtx = currentCanvas.getContext('2d');
+        
+        currentCanvas.width = img.width;
+        currentCanvas.height = img.height;
+        currentCtx.drawImage(img, 0, 0);
+
+        // Calculate steps
+        const widthRatio = targetWidth / img.width;
+        const heightRatio = targetHeight / img.height;
+        const steps = Math.max(1, Math.ceil(Math.log(Math.min(widthRatio, heightRatio)) / Math.log(0.5)));
+
+        for (let i = 0; i < steps; i++) {
+            const stepRatio = Math.pow(Math.min(widthRatio, heightRatio), (i + 1) / steps);
+            const stepWidth = Math.floor(img.width * stepRatio);
+            const stepHeight = Math.floor(img.height * stepRatio);
+
+            const stepCanvas = document.createElement('canvas');
+            const stepCtx = stepCanvas.getContext('2d');
+            
+            stepCanvas.width = stepWidth;
+            stepCanvas.height = stepHeight;
+            
+            stepCtx.imageSmoothingEnabled = true;
+            stepCtx.imageSmoothingQuality = 'high';
+            stepCtx.drawImage(currentCanvas, 0, 0, stepWidth, stepHeight);
+
+            currentCanvas = stepCanvas;
+            currentCtx = stepCtx;
+        }
+
+        // Final draw to target
+        targetCtx.drawImage(currentCanvas, 0, 0, targetWidth, targetHeight);
     }
 
     getOutputFormat(originalType) {
@@ -553,15 +650,21 @@ class ImageCompressor {
     }
 
     handleFileAction(e) {
-        const button = e.target.closest('button');
+        // Find the button that was clicked
+        const button = e.target.closest('button[data-action]');
         if (!button) return;
 
         const action = button.dataset.action;
-        const fileCard = button.closest('.file-card');
-        const fileId = parseInt(fileCard.dataset.fileId);
+        const fileId = parseFloat(button.dataset.fileId);
         const fileData = this.files.find(f => f.id === fileId);
 
-        if (!fileData) return;
+        if (!fileData) {
+            console.error('File not found:', fileId);
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
 
         switch (action) {
             case 'remove':

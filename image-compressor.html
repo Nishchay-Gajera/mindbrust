@@ -51,11 +51,6 @@
 </head>
 
 <body class="bg-gray-50">
-    <!-- Ad Blocker Detection -->
-    <div class="ad-test">
-        <ins class="adsbygoogle" style="display: block; width: 1px; height: 1px;"></ins>
-    </div>
-
     <!-- Message Box -->
     <div id="message-box" class="message-box"></div>
 
@@ -73,106 +68,77 @@
                 </div>
             </div>
 
-            <!-- Top Banner Ad -->
-            <div class="ad-container top-banner">
-                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567890" data-ad-format="auto"></ins>
-            </div>
-
             <!-- Tool Section -->
             <div class="tool-section">
-                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                        <!-- Left Sidebar Ad (Desktop) -->
-                        <div class="hidden lg:block">
-                            <div class="ad-container left-sidebar">
-                                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567891" data-ad-format="auto"></ins>
-                            </div>
-                        </div>
-
-                        <!-- Main Tool Area -->
-                        <div class="lg:col-span-2">
-                            <div class="tool-container">
-                                <!-- Upload Section -->
-                                <div class="upload-section">
-                                    <div class="upload-area" id="upload-area">
-                                        <input type="file" id="file-input" class="file-input" multiple accept=".jpg,.jpeg,.png,.webp,.avif">
-                                        <div class="upload-content">
-                                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="7,10 12,15 17,10"></polyline>
-                                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                                            </svg>
-                                            <h2 class="upload-title">Choose Images to Compress</h2>
-                                            <p class="upload-subtitle">Drag & drop images here or click to browse</p>
-                                            <div class="supported-formats">
-                                                <span class="format-tag">JPG</span>
-                                                <span class="format-tag">PNG</span>
-                                                <span class="format-tag">WEBP</span>
-                                                <span class="format-tag">AVIF</span>
-                                            </div>
-                                        </div>
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="tool-container">
+                        <!-- Upload Section -->
+                        <div class="upload-section">
+                            <div class="upload-area" id="upload-area">
+                                <input type="file" id="file-input" class="file-input" multiple accept=".jpg,.jpeg,.png,.webp,.avif">
+                                <div class="upload-content">
+                                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7,10 12,15 17,10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <h2 class="upload-title">Choose Images to Compress</h2>
+                                    <p class="upload-subtitle">Drag & drop images here or click to browse</p>
+                                    <div class="supported-formats">
+                                        <span class="format-tag">JPG</span>
+                                        <span class="format-tag">PNG</span>
+                                        <span class="format-tag">WEBP</span>
+                                        <span class="format-tag">AVIF</span>
                                     </div>
-                                </div>
-
-                                <!-- Compression Settings -->
-                                <div id="settings-section" class="settings-section hidden">
-                                    <h3 class="settings-title">Compression Settings</h3>
-                                    <div class="settings-grid">
-                                        <div class="setting-item">
-                                            <label class="setting-label">Target File Size (KB)</label>
-                                            <div class="setting-input-group">
-                                                <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000">
-                                                <span class="setting-unit">KB</span>
-                                            </div>
-                                        </div>
-                                        <div class="setting-item">
-                                            <label class="setting-label">Output Format</label>
-                                            <select id="output-format" class="setting-select">
-                                                <option value="same">Keep Original</option>
-                                                <option value="jpeg">JPG</option>
-                                                <option value="png">PNG</option>
-                                                <option value="webp">WebP</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <button id="compress-all-btn" class="compress-button">
-                                        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <polyline points="16,12 12,8 8,12"></polyline>
-                                            <line x1="12" y1="16" x2="12" y2="8"></line>
-                                        </svg>
-                                        Compress All Images
-                                    </button>
-                                </div>
-
-                                <!-- In-Content Ad -->
-                                <div class="ad-container in-content my-8">
-                                    <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567892" data-ad-format="auto"></ins>
-                                </div>
-
-                                <!-- File List -->
-                                <div id="file-list-section" class="file-list-section hidden">
-                                    <div class="section-header">
-                                        <h3 class="section-title">Processing Results</h3>
-                                        <button id="download-all-btn" class="download-all-button hidden">
-                                            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="7,10 12,15 17,10"></polyline>
-                                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                                            </svg>
-                                            Download All
-                                        </button>
-                                    </div>
-                                    <div id="file-list" class="file-list"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Right Sidebar Ad (Desktop) -->
-                        <div class="hidden lg:block">
-                            <div class="ad-container right-sidebar">
-                                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567893" data-ad-format="auto"></ins>
+                        <!-- Compression Settings -->
+                        <div id="settings-section" class="settings-section hidden">
+                            <h3 class="settings-title">Compression Settings</h3>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label class="setting-label">Target File Size (KB)</label>
+                                    <div class="setting-input-group">
+                                        <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000">
+                                        <span class="setting-unit">KB</span>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="setting-label">Output Format</label>
+                                    <select id="output-format" class="setting-select">
+                                        <option value="same">Keep Original</option>
+                                        <option value="jpeg">JPG</option>
+                                        <option value="png">PNG</option>
+                                        <option value="webp">WebP</option>
+                                    </select>
+                                </div>
                             </div>
+                            <button id="compress-all-btn" class="compress-button">
+                                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="16,12 12,8 8,12"></polyline>
+                                    <line x1="12" y1="16" x2="12" y2="8"></line>
+                                </svg>
+                                Compress All Images
+                            </button>
+                        </div>
+
+                        <!-- File List -->
+                        <div id="file-list-section" class="file-list-section hidden">
+                            <div class="section-header">
+                                <h3 class="section-title">Processing Results</h3>
+                                <button id="download-all-btn" class="download-all-button hidden">
+                                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7,10 12,15 17,10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Download All
+                                </button>
+                            </div>
+                            <div id="file-list" class="file-list"></div>
                         </div>
                     </div>
                 </div>
@@ -254,11 +220,6 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Bottom Banner Ad -->
-            <div class="ad-container bottom-banner">
-                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567894" data-ad-format="auto"></ins>
-            </div>
         </main>
 
         <!-- Footer -->
