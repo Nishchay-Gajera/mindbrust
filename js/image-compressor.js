@@ -25,6 +25,7 @@ class ImageCompressor {
         this.supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
         this.isProcessing = false;
 
+        console.log('ImageCompressor initialized'); // Debug log
         this.init();
     }
 
@@ -90,6 +91,8 @@ class ImageCompressor {
     }
 
     getElements() {
+        console.log('Getting DOM elements...'); // Debug log
+        
         this.uploadArea = document.getElementById('upload-area');
         this.fileInput = document.getElementById('file-input');
         this.settingsSection = document.getElementById('settings-section');
@@ -102,15 +105,29 @@ class ImageCompressor {
         this.messageBox = document.getElementById('message-box');
         this.canvas = document.getElementById('compression-canvas');
         
+        // Debug logs to check if elements are found
+        console.log('Upload area found:', !!this.uploadArea);
+        console.log('File input found:', !!this.fileInput);
+        console.log('Compress button found:', !!this.compressAllBtn);
+        console.log('Settings section found:', !!this.settingsSection);
+        
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
+            console.log('Canvas context created:', !!this.ctx);
+        } else {
+            console.error('Canvas not found!');
         }
     }
 
     setupEventListeners() {
         // File input change
         if (this.fileInput) {
-            this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
+            this.fileInput.addEventListener('change', (e) => {
+                console.log('File input change event triggered'); // Debug log
+                if (e.target.files && e.target.files.length > 0) {
+                    this.handleFiles(e.target.files);
+                }
+            });
         }
 
         // Drag and drop
@@ -120,20 +137,35 @@ class ImageCompressor {
                 this.uploadArea.classList.add('dragover');
             });
 
-            this.uploadArea.addEventListener('dragleave', () => {
+            this.uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
                 this.uploadArea.classList.remove('dragover');
             });
 
             this.uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
                 this.uploadArea.classList.remove('dragover');
-                this.handleFiles(e.dataTransfer.files);
+                console.log('Drop event triggered'); // Debug log
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    this.handleFiles(e.dataTransfer.files);
+                }
+            });
+
+            // Click to upload
+            this.uploadArea.addEventListener('click', (e) => {
+                console.log('Upload area clicked'); // Debug log
+                if (this.fileInput) {
+                    this.fileInput.click();
+                }
             });
         }
 
         // Buttons
         if (this.compressAllBtn) {
-            this.compressAllBtn.addEventListener('click', () => this.compressAllFiles());
+            this.compressAllBtn.addEventListener('click', () => {
+                console.log('Compress button clicked, files count:', this.files.length); // Debug log
+                this.compressAllFiles();
+            });
         }
 
         if (this.downloadAllBtn) {
@@ -171,12 +203,20 @@ class ImageCompressor {
     }
 
     handleFiles(files) {
+        console.log('handleFiles called with:', files.length, 'files'); // Debug log
+        
         const fileArray = Array.from(files);
-        const validFiles = fileArray.filter(file => this.supportedFormats.includes(file.type));
+        const validFiles = fileArray.filter(file => {
+            console.log('Checking file:', file.name, 'Type:', file.type); // Debug log
+            return this.supportedFormats.includes(file.type);
+        });
         const invalidFiles = fileArray.filter(file => !this.supportedFormats.includes(file.type));
 
+        console.log('Valid files:', validFiles.length, 'Invalid files:', invalidFiles.length); // Debug log
+
         if (invalidFiles.length > 0) {
-            this.showMessage(`${invalidFiles.length} file(s) skipped. Only JPG, PNG, WEBP, and AVIF formats are supported.`, 'warning');
+            const invalidNames = invalidFiles.map(f => f.name).join(', ');
+            this.showMessage(`${invalidFiles.length} file(s) skipped (${invalidNames}). Only JPG, PNG, WEBP, and AVIF formats are supported.`, 'warning');
         }
 
         if (validFiles.length === 0) {
@@ -197,19 +237,100 @@ class ImageCompressor {
         }));
 
         this.files = [...this.files, ...newFiles];
+        console.log('Total files after adding:', this.files.length); // Debug log
+        
         this.updateUI();
         this.showMessage(`${validFiles.length} file(s) added successfully.`, 'success');
     }
 
     updateUI() {
+        // Settings section is always visible now
+        this.settingsSection.classList.remove('hidden');
+        
         if (this.files.length > 0) {
-            this.settingsSection.classList.remove('hidden');
             this.fileListSection.classList.remove('hidden');
             this.renderFileList();
+            this.updateRecommendedSize();
+            // Enable compress button when files are uploaded
+            this.compressAllBtn.disabled = false;
+            this.compressAllBtn.innerHTML = `
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="16,12 12,8 8,12"></polyline>
+                    <line x1="12" y1="16" x2="12" y2="8"></line>
+                </svg>
+                Compress All Images
+            `;
         } else {
-            this.settingsSection.classList.add('hidden');
             this.fileListSection.classList.add('hidden');
+            // Disable compress button when no files
+            this.compressAllBtn.disabled = true;
+            this.compressAllBtn.innerHTML = `
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="16,12 12,8 8,12"></polyline>
+                    <line x1="12" y1="16" x2="12" y2="8"></line>
+                </svg>
+                Select Images to Enable Compression
+            `;
         }
+    }
+
+    updateRecommendedSize() {
+        if (this.files.length === 0) return;
+        
+        // Calculate recommended compression size based on uploaded files
+        let totalOriginalSize = 0;
+        let averageSize = 0;
+        
+        this.files.forEach(file => {
+            totalOriginalSize += file.originalSize;
+        });
+        
+        averageSize = totalOriginalSize / this.files.length;
+        
+        // Calculate recommended size (compress to 60-70% of average for quality preservation)
+        let recommendedSize = Math.round((averageSize * 0.65) / 1024); // Convert to KB
+        
+        // Set minimum recommended size based on image complexity
+        if (recommendedSize < 20) recommendedSize = 20;
+        if (recommendedSize > 500) recommendedSize = Math.round(averageSize * 0.8 / 1024);
+        
+        // Update the input with recommended value
+        this.targetSizeInput.value = recommendedSize;
+        this.targetSizeInput.placeholder = `Recommended: ${recommendedSize}KB`;
+        
+        // Show recommendation message
+        this.showRecommendation(recommendedSize, Math.round(averageSize / 1024));
+    }
+
+    showRecommendation(recommendedKB, averageKB) {
+        // Create or update recommendation message
+        let recommendationDiv = document.getElementById('size-recommendation');
+        
+        if (!recommendationDiv) {
+            recommendationDiv = document.createElement('div');
+            recommendationDiv.id = 'size-recommendation';
+            recommendationDiv.className = 'size-recommendation';
+            
+            // Insert after the target size input group
+            const inputGroup = this.targetSizeInput.closest('.setting-item');
+            inputGroup.appendChild(recommendationDiv);
+        }
+        
+        recommendationDiv.innerHTML = `
+            <div class="recommendation-content">
+                <svg class="recommendation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <point cx="12" cy="17" rx="0.01" ry="0.01"></point>
+                </svg>
+                <div class="recommendation-text">
+                    <strong>Recommended:</strong> ${recommendedKB}KB (Average original: ${averageKB}KB)
+                    <br><small>This size preserves quality while reducing file size significantly.</small>
+                </div>
+            </div>
+        `;
     }
 
     renderFileList() {
@@ -329,6 +450,53 @@ class ImageCompressor {
             return;
         }
 
+        // Validate logical compression for each file
+        const invalidFiles = [];
+        this.files.forEach(file => {
+            const compressionRatio = targetSize / file.originalSize;
+            // If trying to compress to more than 98% of original size, it's not very logical
+            if (compressionRatio > 0.98) {
+                invalidFiles.push({
+                    name: file.file.name,
+                    originalKB: Math.round(file.originalSize / 1024),
+                    targetKB: Math.round(targetSize / 1024),
+                    issue: 'too_large'
+                });
+            }
+            // If trying to compress to less than 5% of original size, warn about potential quality issues
+            else if (compressionRatio < 0.05) {
+                invalidFiles.push({
+                    name: file.file.name,
+                    originalKB: Math.round(file.originalSize / 1024),
+                    targetKB: Math.round(targetSize / 1024),
+                    issue: 'very_aggressive'
+                });
+            }
+        });
+
+        if (invalidFiles.length > 0) {
+            const tooLarge = invalidFiles.filter(f => f.issue === 'too_large');
+            const veryAggressive = invalidFiles.filter(f => f.issue === 'very_aggressive');
+            
+            let errorMessage = '';
+            if (tooLarge.length > 0) {
+                errorMessage += `⚠️ Target size too close to original for: ${tooLarge.map(f => `${f.name} (${f.originalKB}KB)`).join(', ')}.\n`;
+            }
+            if (veryAggressive.length > 0) {
+                errorMessage += `⚠️ Very aggressive compression requested for: ${veryAggressive.map(f => `${f.name} (${f.originalKB}KB→${f.targetKB}KB)`).join(', ')}.\n`;
+                errorMessage += 'This may significantly affect image quality. Continue anyway?\n';
+                
+                // For very aggressive compression, ask for confirmation but don't block
+                const confirmed = confirm(errorMessage + '\nClick OK to proceed or Cancel to adjust the target size.');
+                if (!confirmed) {
+                    return;
+                }
+            } else if (tooLarge.length > 0) {
+                this.showMessage(errorMessage + 'Please set a smaller target size for meaningful compression.', 'error');
+                return;
+            }
+        }
+
         this.isProcessing = true;
         this.compressAllBtn.disabled = true;
         this.compressAllBtn.innerHTML = `
@@ -396,6 +564,240 @@ class ImageCompressor {
     }
 
     async performCompression(file, targetSize) {
+        console.log(`Starting compression for ${file.name}: ${Math.round(file.size/1024)}KB → ${Math.round(targetSize/1024)}KB`);
+        
+        try {
+            // First try with the professional library
+            let result = await this.tryProfessionalCompression(file, targetSize);
+            
+            // If the result is not close enough to target, use iterative approach
+            if (Math.abs(result.blob.size - targetSize) > targetSize * 0.1) { // If more than 10% off
+                console.log(`Professional library result (${Math.round(result.blob.size/1024)}KB) too far from target, using iterative approach...`);
+                result = await this.iterativeCompression(file, targetSize);
+            }
+            
+            return result;
+            
+        } catch (error) {
+            console.error('Compression failed, using fallback:', error);
+            return this.fallbackCanvasCompression(file, targetSize);
+        }
+    }
+
+    async tryProfessionalCompression(file, targetSize) {
+        // Convert target size from bytes to MB for the library
+        const targetSizeMB = targetSize / (1024 * 1024);
+        const outputFormat = this.getOptimalFormat(file.type, targetSize, file.size);
+        
+        // Configure compression options
+        const options = {
+            maxSizeMB: targetSizeMB,
+            maxWidthOrHeight: 4096,
+            useWebWorker: false,
+            fileType: outputFormat,
+            initialQuality: this.getInitialQuality(targetSize, file.size),
+            alwaysKeepResolution: false,
+            preserveExif: false
+        };
+
+        const compressedFile = await imageCompression(file, options);
+        console.log(`Professional compression result: ${Math.round(compressedFile.size/1024)}KB`);
+        
+        return { blob: compressedFile };
+    }
+
+    async iterativeCompression(file, targetSize) {
+        console.log('Using iterative compression for precise targeting...');
+        
+        // Use canvas-based iterative approach for precise control
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                img.onload = async () => {
+                    try {
+                        const result = await this.preciseTargetCompression(img, file, targetSize);
+                        resolve(result);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = e.target.result;
+            };
+
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async preciseTargetCompression(img, originalFile, targetSize) {
+        // Set up canvas
+        this.canvas.width = img.width;
+        this.canvas.height = img.height;
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+
+        const mimeType = this.getOptimalFormat(originalFile.type, targetSize, originalFile.size);
+        const tolerance = targetSize * 0.05; // 5% tolerance
+
+        // Binary search approach for quality
+        let minQuality = 0.05;
+        let maxQuality = 0.95;
+        let bestBlob = null;
+        let bestDifference = Infinity;
+        let iterations = 0;
+        const maxIterations = 15;
+
+        console.log(`Targeting ${Math.round(targetSize/1024)}KB with ${tolerance} bytes tolerance`);
+
+        while (iterations < maxIterations && Math.abs(maxQuality - minQuality) > 0.02) {
+            const currentQuality = (minQuality + maxQuality) / 2;
+            
+            // Clear and draw
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0);
+            
+            // Create blob
+            const dataURL = this.canvas.toDataURL(mimeType, currentQuality);
+            const blob = this.dataURLToBlob(dataURL);
+            
+            const difference = Math.abs(blob.size - targetSize);
+            
+            console.log(`Iteration ${iterations + 1}: Quality ${Math.round(currentQuality*100)}% = ${Math.round(blob.size/1024)}KB (diff: ${Math.round(difference/1024)}KB)`);
+            
+            // Keep track of best result so far
+            if (difference < bestDifference) {
+                bestDifference = difference;
+                bestBlob = blob;
+            }
+            
+            // Check if we're within tolerance
+            if (difference <= tolerance) {
+                console.log(`✓ Hit target within tolerance! ${Math.round(blob.size/1024)}KB`);
+                return { blob: blob };
+            }
+            
+            // Adjust search range
+            if (blob.size > targetSize) {
+                maxQuality = currentQuality; // Need lower quality
+            } else {
+                minQuality = currentQuality; // Can use higher quality
+            }
+            
+            iterations++;
+        }
+
+        // If binary search on quality didn't work well enough, try resizing
+        if (bestDifference > targetSize * 0.15) { // If still more than 15% off
+            console.log('Quality adjustment insufficient, trying resize approach...');
+            const resizeResult = await this.preciseResizeCompression(img, originalFile, targetSize, mimeType);
+            if (resizeResult && Math.abs(resizeResult.blob.size - targetSize) < bestDifference) {
+                return resizeResult;
+            }
+        }
+
+        console.log(`Best result: ${Math.round(bestBlob.size/1024)}KB (${Math.round(bestDifference/1024)}KB from target)`);
+        return { blob: bestBlob };
+    }
+
+    async preciseResizeCompression(img, originalFile, targetSize, mimeType) {
+        const tolerance = targetSize * 0.05;
+        
+        // Calculate approximate scale needed
+        const compressionRatio = targetSize / originalFile.size;
+        let currentScale = Math.sqrt(compressionRatio);
+        currentScale = Math.max(0.2, Math.min(1.0, currentScale));
+        
+        console.log(`Trying resize approach, starting scale: ${Math.round(currentScale*100)}%`);
+        
+        let bestBlob = null;
+        let bestDifference = Infinity;
+        
+        // Try different scales
+        const scaleVariations = [-0.1, 0, 0.05, 0.1, 0.15, 0.2, -0.05, -0.15];
+        
+        for (const variation of scaleVariations) {
+            const scale = Math.max(0.2, Math.min(1.0, currentScale + variation));
+            const newWidth = Math.floor(img.width * scale);
+            const newHeight = Math.floor(img.height * scale);
+            
+            // Create resize canvas
+            const resizeCanvas = document.createElement('canvas');
+            const resizeCtx = resizeCanvas.getContext('2d');
+            resizeCanvas.width = newWidth;
+            resizeCanvas.height = newHeight;
+            resizeCtx.imageSmoothingEnabled = true;
+            resizeCtx.imageSmoothingQuality = 'high';
+            resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
+            
+            // Try different qualities for this size
+            const qualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4];
+            
+            for (const quality of qualities) {
+                const dataURL = resizeCanvas.toDataURL(mimeType, quality);
+                const blob = this.dataURLToBlob(dataURL);
+                const difference = Math.abs(blob.size - targetSize);
+                
+                if (difference < bestDifference) {
+                    bestDifference = difference;
+                    bestBlob = blob;
+                }
+                
+                if (difference <= tolerance) {
+                    console.log(`✓ Resize hit target! Scale: ${Math.round(scale*100)}%, Quality: ${Math.round(quality*100)}% = ${Math.round(blob.size/1024)}KB`);
+                    return { blob: blob };
+                }
+            }
+        }
+        
+        if (bestBlob) {
+            console.log(`Best resize result: ${Math.round(bestBlob.size/1024)}KB`);
+            return { blob: bestBlob };
+        }
+        
+        return null;
+    }
+
+    getOptimalFormat(originalType, targetSize, originalSize) {
+        const compressionRatio = targetSize / originalSize;
+        const outputFormat = this.outputFormatSelect ? this.outputFormatSelect.value : 'same';
+        
+        if (outputFormat !== 'same') {
+            return outputFormat === 'jpeg' ? 'image/jpeg' : `image/${outputFormat}`;
+        }
+        
+        // Auto-select best format for compression
+        if (originalType === 'image/png' && compressionRatio < 0.8) {
+            return 'image/jpeg'; // Convert PNG to JPEG for better compression
+        }
+        
+        if (originalType === 'image/jpeg' || originalType === 'image/jpg') {
+            return 'image/jpeg';
+        }
+        
+        if (originalType === 'image/webp') {
+            return 'image/webp'; // WebP is already efficient
+        }
+        
+        // Default to JPEG for best compression
+        return 'image/jpeg';
+    }
+
+    getInitialQuality(targetSize, originalSize) {
+        const compressionRatio = targetSize / originalSize;
+        
+        if (compressionRatio > 0.8) return 0.9;        // Light compression
+        if (compressionRatio > 0.6) return 0.8;        // Moderate compression
+        if (compressionRatio > 0.4) return 0.7;        // Medium compression  
+        if (compressionRatio > 0.2) return 0.6;        // Heavy compression
+        return 0.4;                                     // Very heavy compression
+    }
+
+    async fallbackCanvasCompression(file, targetSize) {
+        console.log('Using fallback canvas compression...');
+        
         return new Promise((resolve, reject) => {
             const img = new Image();
             const reader = new FileReader();
@@ -403,8 +805,63 @@ class ImageCompressor {
             reader.onload = (e) => {
                 img.onload = () => {
                     try {
-                        const result = this.compressToTargetSize(img, file, targetSize);
-                        resolve(result);
+                        // Set canvas dimensions
+                        this.canvas.width = img.width;
+                        this.canvas.height = img.height;
+
+                        // Determine output format
+                        const mimeType = this.getOptimalFormat(file.type, targetSize, file.size);
+
+                        // Enable high-quality rendering
+                        this.ctx.imageSmoothingEnabled = true;
+                        this.ctx.imageSmoothingQuality = 'high';
+
+                        // Try different quality levels
+                        const qualities = [0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+                        
+                        for (const quality of qualities) {
+                            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                            this.ctx.drawImage(img, 0, 0);
+                            
+                            const dataURL = this.canvas.toDataURL(mimeType, quality);
+                            const blob = this.dataURLToBlob(dataURL);
+
+                            if (blob.size <= targetSize) {
+                                console.log(`Fallback success with quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
+                                resolve({ blob: blob });
+                                return;
+                            }
+                        }
+
+                        // If quality reduction didn't work, try resizing
+                        const scales = [0.9, 0.8, 0.7, 0.6, 0.5];
+                        for (const scale of scales) {
+                            const newWidth = Math.floor(img.width * scale);
+                            const newHeight = Math.floor(img.height * scale);
+                            
+                            this.canvas.width = newWidth;
+                            this.canvas.height = newHeight;
+                            this.ctx.clearRect(0, 0, newWidth, newHeight);
+                            this.ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                            
+                            const dataURL = this.canvas.toDataURL(mimeType, 0.8);
+                            const blob = this.dataURLToBlob(dataURL);
+
+                            if (blob.size <= targetSize) {
+                                console.log(`Fallback success with scale ${Math.round(scale*100)}%: ${Math.round(blob.size/1024)}KB`);
+                                resolve({ blob: blob });
+                                return;
+                            }
+                        }
+
+                        // Last resort
+                        this.canvas.width = img.width;
+                        this.canvas.height = img.height;
+                        this.ctx.clearRect(0, 0, img.width, img.height);
+                        this.ctx.drawImage(img, 0, 0);
+                        const dataURL = this.canvas.toDataURL(mimeType, 0.1);
+                        resolve({ blob: this.dataURLToBlob(dataURL) });
+                        
                     } catch (error) {
                         reject(error);
                     }
@@ -431,104 +888,115 @@ class ImageCompressor {
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.imageSmoothingQuality = 'high';
 
-        // First try with high quality (0.85-1.0)
+        // Check if compression ratio is reasonable
+        const compressionRatio = targetSize / originalFile.size;
+        
+        console.log(`Compressing ${originalFile.name}: ${Math.round(originalFile.size/1024)}KB → ${Math.round(targetSize/1024)}KB (${Math.round(compressionRatio*100)}%)`);
+
+        // If target is larger than 90% of original, just apply minimal compression
+        if (compressionRatio > 0.9) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0);
+            const dataURL = this.canvas.toDataURL(mimeType, 0.85);
+            return { blob: this.dataURLToBlob(dataURL) };
+        }
+
         let bestBlob = null;
         let bestQuality = 1.0;
 
-        // Try high quality first (preserve most quality)
-        for (let quality = 0.95; quality >= 0.75; quality -= 0.05) {
+        // Start with different quality levels based on desired compression
+        let qualityLevels;
+        if (compressionRatio >= 0.7) {
+            qualityLevels = [0.9, 0.85, 0.8, 0.75, 0.7];
+        } else if (compressionRatio >= 0.4) {
+            qualityLevels = [0.8, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4];
+        } else {
+            qualityLevels = [0.6, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2];
+        }
+
+        // Try different quality levels
+        for (const quality of qualityLevels) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(img, 0, 0);
 
             const dataURL = this.canvas.toDataURL(mimeType, quality);
             const blob = this.dataURLToBlob(dataURL);
 
+            console.log(`Quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
+
             if (blob.size <= targetSize) {
                 bestBlob = blob;
                 bestQuality = quality;
+                console.log(`✓ Found suitable quality: ${Math.round(quality*100)}%`);
                 break;
             }
         }
 
-        // If high quality didn't work, try binary search with better range
+        // If quality reduction alone didn't work, try resizing
         if (!bestBlob) {
-            let minQuality = 0.4; // Don't go below 40% quality initially
-            let maxQuality = 0.75;
-            let iterations = 0;
-            const maxIterations = 12;
-
-            while (iterations < maxIterations && Math.abs(maxQuality - minQuality) > 0.02) {
-                const quality = (minQuality + maxQuality) / 2;
-                
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.drawImage(img, 0, 0);
-
-                const dataURL = this.canvas.toDataURL(mimeType, quality);
-                const blob = this.dataURLToBlob(dataURL);
-
-                if (blob.size <= targetSize) {
-                    bestBlob = blob;
-                    bestQuality = quality;
-                    minQuality = quality;
-                } else {
-                    maxQuality = quality;
-                }
-
-                iterations++;
-            }
-        }
-
-        // If still no success, try smart resizing with quality preservation
-        if (!bestBlob || bestBlob.size > targetSize) {
-            return this.compressWithSmartResize(img, originalFile, targetSize, mimeType);
+            console.log('Quality reduction failed, trying resize...');
+            return this.compressWithSmartResize(img, originalFile, targetSize, mimeType, compressionRatio);
         }
 
         return { blob: bestBlob };
     }
 
-    compressWithSmartResize(img, originalFile, targetSize, mimeType) {
+    createFallbackBlob(img, mimeType) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(img, 0, 0);
+        const dataURL = this.canvas.toDataURL(mimeType, 0.3);
+        return this.dataURLToBlob(dataURL);
+    }
+
+    compressWithSmartResize(img, originalFile, targetSize, mimeType, compressionRatio = null) {
+        console.log('Using smart resize compression...');
+        
         let bestBlob = null;
         
-        // Calculate the reduction ratio needed
-        const originalDataURL = this.canvas.toDataURL(mimeType, 0.9);
-        const originalSize = this.dataURLToBlob(originalDataURL).size;
-        const reductionNeeded = targetSize / originalSize;
-        
-        // If we need less than 50% reduction, prefer quality reduction over resizing
-        if (reductionNeeded > 0.5) {
-            // Try moderate quality reduction first
-            const qualities = [0.8, 0.7, 0.6, 0.5, 0.45, 0.4, 0.35, 0.3];
-            
-            for (const quality of qualities) {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.drawImage(img, 0, 0);
-                
-                const dataURL = this.canvas.toDataURL(mimeType, quality);
-                const blob = this.dataURLToBlob(dataURL);
+        // If no compression ratio provided, calculate it
+        if (!compressionRatio) {
+            compressionRatio = targetSize / originalFile.size;
+        }
 
-                if (blob.size <= targetSize) {
-                    bestBlob = blob;
-                    break;
-                }
+        // Try quality reduction first, even for resize scenarios
+        const qualities = [0.7, 0.6, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1];
+        
+        for (const quality of qualities) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0);
+            
+            const dataURL = this.canvas.toDataURL(mimeType, quality);
+            const blob = this.dataURLToBlob(dataURL);
+
+            console.log(`Resize quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
+
+            if (blob.size <= targetSize) {
+                bestBlob = blob;
+                console.log(`✓ Found suitable quality: ${Math.round(quality*100)}%`);
+                break;
             }
         }
 
-        // If quality reduction didn't work, try smart resizing
+        // If quality reduction still didn't work, try resizing
         if (!bestBlob) {
-            // Calculate optimal scale to maintain aspect ratio
-            let scale = Math.sqrt(reductionNeeded);
+            console.log('Trying dimension reduction...');
+            
+            // Calculate scale based on compression ratio
+            let scale = Math.sqrt(compressionRatio);
             scale = Math.max(scale, 0.3); // Don't go below 30% of original size
             
-            const resizeSteps = [scale, scale * 0.9, scale * 0.8, scale * 0.7, scale * 0.6];
+            const scaleSteps = [scale, scale * 0.95, scale * 0.9, scale * 0.85, scale * 0.8, scale * 0.75];
             
-            for (const currentScale of resizeSteps) {
+            for (const currentScale of scaleSteps) {
                 const newWidth = Math.floor(img.width * currentScale);
                 const newHeight = Math.floor(img.height * currentScale);
 
-                // Ensure minimum dimensions
+                // Ensure reasonable minimum dimensions
                 if (newWidth < 100 || newHeight < 100) continue;
 
-                // Create a temporary canvas for resizing with better quality
+                console.log(`Trying resize: ${newWidth}x${newHeight} (${Math.round(currentScale*100)}%)`);
+
+                // Create a temporary canvas for resizing
                 const resizeCanvas = document.createElement('canvas');
                 const resizeCtx = resizeCanvas.getContext('2d');
                 
@@ -538,23 +1006,20 @@ class ImageCompressor {
                 // Enable high-quality resizing
                 resizeCtx.imageSmoothingEnabled = true;
                 resizeCtx.imageSmoothingQuality = 'high';
-                
-                // Use step-down resizing for better quality on large reductions
-                if (currentScale < 0.5) {
-                    this.stepDownResize(img, resizeCanvas, resizeCtx, newWidth, newHeight);
-                } else {
-                    resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
-                }
+                resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
 
                 // Try different qualities with the resized image
-                const resizeQualities = [0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6];
+                const resizeQualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2];
                 
                 for (const quality of resizeQualities) {
                     const dataURL = resizeCanvas.toDataURL(mimeType, quality);
                     const blob = this.dataURLToBlob(dataURL);
 
+                    console.log(`Resize ${Math.round(currentScale*100)}% + Quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
+
                     if (blob.size <= targetSize) {
                         bestBlob = blob;
+                        console.log(`✓ Found suitable combination: ${Math.round(currentScale*100)}% scale + ${Math.round(quality*100)}% quality`);
                         break;
                     }
                 }
@@ -563,13 +1028,15 @@ class ImageCompressor {
             }
         }
 
-        // Last resort: aggressive compression but maintain some quality
+        // Absolute fallback
         if (!bestBlob) {
+            console.log('Using fallback compression...');
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(img, 0, 0);
             
-            const dataURL = this.canvas.toDataURL(mimeType, 0.25);
+            const dataURL = this.canvas.toDataURL(mimeType, 0.1);
             bestBlob = this.dataURLToBlob(dataURL);
+            console.log(`Fallback result: ${Math.round(bestBlob.size/1024)}KB`);
         }
 
         return { blob: bestBlob };

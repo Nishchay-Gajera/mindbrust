@@ -94,14 +94,14 @@
                             </div>
                         </div>
 
-                        <!-- Compression Settings -->
-                        <div id="settings-section" class="settings-section hidden">
+                        <!-- Compression Settings - Always Visible -->
+                        <div id="settings-section" class="settings-section">
                             <h3 class="settings-title">Compression Settings</h3>
                             <div class="settings-grid">
                                 <div class="setting-item">
                                     <label class="setting-label">Target File Size (KB)</label>
                                     <div class="setting-input-group">
-                                        <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000">
+                                        <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000" placeholder="Enter target size">
                                         <span class="setting-unit">KB</span>
                                     </div>
                                 </div>
@@ -115,13 +115,13 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="compress-all-btn" class="compress-button">
+                            <button id="compress-all-btn" class="compress-button" disabled>
                                 <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <polyline points="16,12 12,8 8,12"></polyline>
                                     <line x1="12" y1="16" x2="12" y2="8"></line>
                                 </svg>
-                                Compress All Images
+                                Select Images to Enable Compression
                             </button>
                         </div>
 
@@ -157,7 +157,7 @@
                         <div class="step-item">
                             <div class="step-number">2</div>
                             <h3 class="step-title">Set Target Size</h3>
-                            <p class="step-description">Enter your desired file size in KB (e.g., 100KB, 50KB)</p>
+                            <p class="step-description">Use our recommended size or enter your desired file size in KB</p>
                         </div>
                         <div class="step-item">
                             <div class="step-number">3</div>
@@ -186,13 +186,13 @@
                         </div>
                         <div class="faq-item">
                             <button class="faq-question">
-                                <span>How accurate is the target file size compression?</span>
+                                <span>How does the intelligent compression work?</span>
                                 <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <polyline points="6,9 12,15 18,9"></polyline>
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Our intelligent compression algorithm typically gets within 5-10% of your target size while preserving maximum image quality.</p>
+                                <p>Our intelligent algorithm analyzes your images and recommends optimal compression sizes. It prevents illogical compression ratios that would severely impact quality, ensuring the best balance between file size and visual quality.</p>
                             </div>
                         </div>
                         <div class="faq-item">
@@ -203,7 +203,18 @@
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Yes! All image processing happens directly in your browser. Your images are never uploaded to our servers, ensuring complete privacy.</p>
+                                <p>Yes! All image processing happens directly in your browser. Your images are never uploaded to our servers, ensuring complete privacy and security.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What if I set an unrealistic target size?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Our smart validation system will warn you if the target size is too large (not logical) or too small (would severely impact quality). We recommend compression sizes that maintain good visual quality while achieving significant file size reduction.</p>
                             </div>
                         </div>
                         <div class="faq-item">
@@ -214,7 +225,7 @@
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Absolutely! You can select multiple images and compress them all with the same settings. Use the "Download All" feature to get a zip file.</p>
+                                <p>Absolutely! You can select multiple images and compress them all with the same settings. Use the "Download All" feature to get a zip file with all compressed images.</p>
                             </div>
                         </div>
                     </div>
@@ -230,6 +241,7 @@
     <canvas id="compression-canvas" style="display: none;"></canvas>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="js/image-compressor.js?v=1.0.0"></script>
 </body>
