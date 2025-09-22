@@ -80,9 +80,8 @@
                         <h2 class="text-3xl font-extrabold text-gray-900">Our Collection of Tools</h2>
                         <p class="mt-4 text-lg text-gray-600">Designed for simplicity and power.</p>
                     </div>
-                    <div class="mt-12 flex justify-center">
+                    <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-2 justify-items-center">
                         <!-- Tool Card: WebP Converter -->
-                        <!-- mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 -->
                         <a href="webp-converter.html" class="tool-card">
                             <div class="tool-card-icon bg-indigo-100 text-indigo-600">
                                 <!-- Icon for WebP -->
@@ -97,21 +96,27 @@
                                 format.</p>
                         </a>
 
+                        <!-- Tool Card: Image Compressor -->
+                        <a href="image-compressor.html" class="tool-card">
+                            <div class="tool-card-icon bg-green-100 text-green-600">
+                                <!-- Icon for Image Compressor -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                                </svg>
+                            </div>
+                            <h3 class="tool-card-title">Image Compressor</h3>
+                            <p class="tool-card-description">Compress images to specific file sizes (like 100KB) with minimal quality loss.</p>
+                        </a>
 
-                        <!-- <div class="tool-card coming-soon">
+                        <!-- Coming Soon Tools -->
+                        <div class="tool-card coming-soon">
                             <div class="tool-card-icon bg-red-100 text-red-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                             </div>
                             <h3 class="tool-card-title">PDF Tools</h3>
                             <p class="tool-card-description">Merge, split, compress, and edit your PDF files with ease.</p>
-                        </div>
-
-                        <div class="tool-card coming-soon">
-                            <div class="tool-card-icon bg-green-100 text-green-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" /></svg>
-                            </div>
-                            <h3 class="tool-card-title">Image Compressor</h3>
-                            <p class="tool-card-description">Reduce the file size of your images without losing quality.</p>
                         </div>
                         
                         <div class="tool-card coming-soon">
@@ -120,7 +125,7 @@
                             </div>
                             <h3 class="tool-card-title">Background Remover</h3>
                             <p class="tool-card-description">Automatically remove the background from any image.</p>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -150,8 +155,7 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg></div>
                             <h3 class="feature-title">Privacy Focused</h3>
-                            <p class="feature-description">We respect your privacy. All uploaded files are automatically
-                                deleted from our servers within hours.</p>
+                            <p class="feature-description">We respect your privacy. All processing happens in your browser - no files are uploaded to our servers.</p>
                         </div>
                         <div class="feature-item text-center">
                             <div class="feature-icon text-yellow-500"><svg xmlns="http://www.w3.org/2000/svg"

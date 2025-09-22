@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress Image to Specific Size (KB) - Free Online Tool | Mindbrust</title>
+    <meta name="description" content="Easily compress JPG, PNG, WEBP, and AVIF images to a specific size like 100KB or 50KB online. Our free tool reduces file size with minimal quality loss.">
+    <meta name="keywords" content="image compressor, compress image, reduce file size, image optimization, JPG compressor, PNG compressor, WEBP compressor, AVIF compressor">
+    
+    <link rel="canonical" href="https://www.mindbrust.com/image-compressor.html">
+    
+    <meta property="og:title" content="Free Image Compressor - Compress to Target Size | Mindbrust">
+    <meta property="og:description" content="Compress images to specific file sizes with minimal quality loss. Support for JPG, PNG, WEBP, and AVIF formats.">
+    <meta property="og:image" content="https://www.mindbrust.com/assets/images/logo.svg">
+    <meta property="og:url" content="https://www.mindbrust.com/image-compressor.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Image Compressor - Compress to Target Size">
+    <meta name="twitter:description" content="Compress images to specific file sizes with minimal quality loss.">
+    <meta name="twitter:image" content="https://www.mindbrust.com/assets/images/logo.svg">
+
+    <link rel="stylesheet" href="css/styles.css?v=1.0.0">
+    <link rel="stylesheet" href="css/image-compressor.css?v=1.0.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script src="js/ads-loader.js"></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Image Compressor",
+      "description": "Free online tool to compress images to specific file sizes",
+      "url": "https://www.mindbrust.com/image-compressor.html",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Ad Blocker Detection -->
+    <div class="ad-test">
+        <ins class="adsbygoogle" style="display: block; width: 1px; height: 1px;"></ins>
+    </div>
+
+    <!-- Message Box -->
+    <div id="message-box" class="message-box"></div>
+
+    <div id="page-wrapper" class="flex flex-col min-h-screen">
+        <!-- Header -->
+        <div id="header-container" class="flex-shrink-0"></div>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <div class="compressor-hero">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">Image Compressor</h1>
+                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Reduce file size to a target KB with minimal quality loss</p>
+                </div>
+            </div>
+
+            <!-- Top Banner Ad -->
+            <div class="ad-container top-banner">
+                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567890" data-ad-format="auto"></ins>
+            </div>
+
+            <!-- Tool Section -->
+            <div class="tool-section">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        <!-- Left Sidebar Ad (Desktop) -->
+                        <div class="hidden lg:block">
+                            <div class="ad-container left-sidebar">
+                                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567891" data-ad-format="auto"></ins>
+                            </div>
+                        </div>
+
+                        <!-- Main Tool Area -->
+                        <div class="lg:col-span-2">
+                            <div class="tool-container">
+                                <!-- Upload Section -->
+                                <div class="upload-section">
+                                    <div class="upload-area" id="upload-area">
+                                        <input type="file" id="file-input" class="file-input" multiple accept=".jpg,.jpeg,.png,.webp,.avif">
+                                        <div class="upload-content">
+                                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7,10 12,15 17,10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            <h2 class="upload-title">Choose Images to Compress</h2>
+                                            <p class="upload-subtitle">Drag & drop images here or click to browse</p>
+                                            <div class="supported-formats">
+                                                <span class="format-tag">JPG</span>
+                                                <span class="format-tag">PNG</span>
+                                                <span class="format-tag">WEBP</span>
+                                                <span class="format-tag">AVIF</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Compression Settings -->
+                                <div id="settings-section" class="settings-section hidden">
+                                    <h3 class="settings-title">Compression Settings</h3>
+                                    <div class="settings-grid">
+                                        <div class="setting-item">
+                                            <label class="setting-label">Target File Size (KB)</label>
+                                            <div class="setting-input-group">
+                                                <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000">
+                                                <span class="setting-unit">KB</span>
+                                            </div>
+                                        </div>
+                                        <div class="setting-item">
+                                            <label class="setting-label">Output Format</label>
+                                            <select id="output-format" class="setting-select">
+                                                <option value="same">Keep Original</option>
+                                                <option value="jpeg">JPG</option>
+                                                <option value="png">PNG</option>
+                                                <option value="webp">WebP</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button id="compress-all-btn" class="compress-button">
+                                        <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="16,12 12,8 8,12"></polyline>
+                                            <line x1="12" y1="16" x2="12" y2="8"></line>
+                                        </svg>
+                                        Compress All Images
+                                    </button>
+                                </div>
+
+                                <!-- In-Content Ad -->
+                                <div class="ad-container in-content my-8">
+                                    <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567892" data-ad-format="auto"></ins>
+                                </div>
+
+                                <!-- File List -->
+                                <div id="file-list-section" class="file-list-section hidden">
+                                    <div class="section-header">
+                                        <h3 class="section-title">Processing Results</h3>
+                                        <button id="download-all-btn" class="download-all-button hidden">
+                                            <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7,10 12,15 17,10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            Download All
+                                        </button>
+                                    </div>
+                                    <div id="file-list" class="file-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Sidebar Ad (Desktop) -->
+                        <div class="hidden lg:block">
+                            <div class="ad-container right-sidebar">
+                                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567893" data-ad-format="auto"></ins>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Section -->
+            <section class="how-it-works-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-heading">How It Works</h2>
+                    <div class="steps-grid">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Upload Images</h3>
+                            <p class="step-description">Select or drag and drop your JPG, PNG, WEBP, or AVIF images</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Set Target Size</h3>
+                            <p class="step-description">Enter your desired file size in KB (e.g., 100KB, 50KB)</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Download Results</h3>
+                            <p class="step-description">Get your compressed images with optimal quality preservation</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="faq-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-heading">Frequently Asked Questions</h2>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What image formats are supported?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>We support JPG, JPEG, PNG, WEBP, and AVIF image formats. Our tool can compress these formats while maintaining maximum quality.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>How accurate is the target file size compression?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Our intelligent compression algorithm typically gets within 5-10% of your target size while preserving maximum image quality.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Is my data secure and private?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Yes! All image processing happens directly in your browser. Your images are never uploaded to our servers, ensuring complete privacy.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Can I compress multiple images at once?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Absolutely! You can select multiple images and compress them all with the same settings. Use the "Download All" feature to get a zip file.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Banner Ad -->
+            <div class="ad-container bottom-banner">
+                <ins class="adsbygoogle test-ad" style="display:block" data-ad-client="ca-pub-8110034721327117" data-ad-slot="1234567894" data-ad-format="auto"></ins>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <div id="footer-container" class="flex-shrink-0"></div>
+    </div>
+
+    <!-- Hidden Canvas for Processing -->
+    <canvas id="compression-canvas" style="display: none;"></canvas>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="js/image-compressor.js?v=1.0.0"></script>
+</body>
+
+</html>
