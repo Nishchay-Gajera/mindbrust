@@ -8,7 +8,7 @@
   </url>
   <url>
     <loc>https://www.mindbrust.com/about.html</loc>
-    <lastmod>2025-09-14</lastmod>
+    <lastmod>2025-09-15</lastmod>
     <changefreq>Daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -19,8 +19,14 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://www.mindbrust.com/image-compressor.html</loc>
+    <lastmod>2025-09-23</lastmod>
+    <changefreq>Daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mindbrust.com/index.html</loc>
-    <lastmod>2025-09-15</lastmod>
+    <lastmod>2025-09-23</lastmod>
     <changefreq>Daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -38,7 +44,7 @@
   </url>
   <url>
     <loc>https://www.mindbrust.com/webp-converter.html</loc>
-    <lastmod>2025-09-15</lastmod>
+    <lastmod>2025-09-23</lastmod>
     <changefreq>Daily</changefreq>
     <priority>0.9</priority>
   </url>
