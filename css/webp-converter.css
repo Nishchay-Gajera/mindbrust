@@ -104,7 +104,7 @@
     font-weight: 500;
 }
 
-/* Settings Section */
+/* Settings Section - Updated for full width slider */
 .settings-section {
     padding: 2rem;
     border-bottom: 1px solid #f3f4f6;
@@ -125,14 +125,15 @@
     margin-bottom: 2rem;
 }
 
+/* Remove the max-width constraint and center alignment */
 .settings-grid-single {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
     margin-bottom: 2rem;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    /* Removed: max-width: 400px; */
+    /* Removed: margin-left: auto; */
+    /* Removed: margin-right: auto; */
 }
 
 .setting-item {
@@ -674,9 +675,8 @@
         gap: 1rem;
     }
     
-    .settings-grid-single {
-        max-width: none;
-    }
+    /* No need to reset max-width for .settings-grid-single 
+       since we removed the constraint */
     
     .conversion-results {
         grid-template-columns: 1fr;

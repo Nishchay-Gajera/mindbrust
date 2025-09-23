@@ -132,60 +132,110 @@
     min-height: 1.25rem;
 }
 
-/* FAQ Section */
+/* Updated FAQ Section - Matching Image Compressor Style */
 .faq-section {
-    background-color: #f9fafb;
+    background: white;
     padding: 4rem 0;
+}
+
+.section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.faq-container {
+    max-width: 48rem; /* max-w-3xl equivalent */
+    margin: 0 auto;
 }
 
 .faq-item {
     border: 1px solid #e5e7eb;
-    border-radius: 0.75rem;
-    background-color: #ffffff;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    background: white;
 }
 
 .faq-question {
     width: 100%;
+    padding: 1.5rem;
+    background: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.5rem;
-    font-size: 1.125rem;
+    justify-content: space-between;
+    font-size: 1rem;
     font-weight: 600;
     color: #111827;
-    cursor: pointer;
-    background-color: transparent;
-    transition: background-color 0.2s ease;
+    transition: background 0.2s ease;
 }
 
 .faq-question:hover {
-    background-color: #f9fafb;
-}
-
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
-    padding: 0 1.5rem; /* Horizontal padding only */
-    color: #6b7280;
-    line-height: 1.6;
-}
-
-    .faq-item.open .faq-answer {
-    padding-top: 0.5rem;
-    padding-bottom: 4.5rem;
+    background: #f9fafb;
 }
 
 .faq-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
     transition: transform 0.3s ease;
+    flex-shrink: 0;
 }
 
 .faq-item.open .faq-icon {
     transform: rotate(180deg);
 }
 
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: #f9fafb;
+}
+
+.faq-item.open .faq-answer {
+    max-height: 200px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 0.5rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .form-card {
         padding: 1.5rem;
     }
+    
+    .faq-question {
+        padding: 1rem;
     }
+    
+    .faq-item.open .faq-answer {
+        padding: 0 1rem 1rem;
+    }
+    
+    .section-heading {
+        font-size: 1.875rem;
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .contact-hero {
+        padding: 3rem 0;
+    }
+    
+    .section-heading {
+        font-size: 1.5rem;
+    }
+}
