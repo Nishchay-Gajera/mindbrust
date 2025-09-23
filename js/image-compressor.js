@@ -126,6 +126,8 @@ class ImageCompressor {
                 console.log('File input change event triggered'); // Debug log
                 if (e.target.files && e.target.files.length > 0) {
                     this.handleFiles(e.target.files);
+                    // Clear the input value to allow selecting the same files again
+                    e.target.value = '';
                 }
             });
         }
@@ -144,6 +146,7 @@ class ImageCompressor {
 
             this.uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 this.uploadArea.classList.remove('dragover');
                 console.log('Drop event triggered'); // Debug log
                 if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
@@ -151,9 +154,17 @@ class ImageCompressor {
                 }
             });
 
-            // Click to upload
+            // Click to upload - but prevent double triggering
             this.uploadArea.addEventListener('click', (e) => {
+                // Don't trigger if the click is on the file input itself
+                if (e.target === this.fileInput) {
+                    return;
+                }
+                
                 console.log('Upload area clicked'); // Debug log
+                e.preventDefault();
+                e.stopPropagation();
+                
                 if (this.fileInput) {
                     this.fileInput.click();
                 }
@@ -162,14 +173,18 @@ class ImageCompressor {
 
         // Buttons
         if (this.compressAllBtn) {
-            this.compressAllBtn.addEventListener('click', () => {
+            this.compressAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 console.log('Compress button clicked, files count:', this.files.length); // Debug log
                 this.compressAllFiles();
             });
         }
 
         if (this.downloadAllBtn) {
-            this.downloadAllBtn.addEventListener('click', () => this.downloadAllFiles());
+            this.downloadAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.downloadAllFiles();
+            });
         }
 
         // File list delegation for dynamic content

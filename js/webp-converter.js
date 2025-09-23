@@ -1,27 +1,31 @@
 /**
  * WebP Converter Script
- * Handles WebP conversion functionality and component loading for the converter page
+ * Handles WebP conversion functionality with proper error handling
  */
 
 class WebPConverter {
     constructor() {
+        // DOM Elements
+        this.uploadArea = null;
         this.fileInput = null;
-        this.fileLabel = null;
-        this.fileListContainer = null;
+        this.settingsSection = null;
+        this.fileListSection = null;
         this.fileList = null;
         this.qualitySlider = null;
         this.qualityValueSpan = null;
-        this.convertButton = null;
-        this.downloadAllButton = null;
-        this.clearButton = null;
+        this.convertAllBtn = null;
+        this.downloadAllBtn = null;
+        this.messageBox = null;
         this.conversionCanvas = null;
         this.ctx = null;
-        this.messageBox = null;
         
+        // State
         this.filesToConvert = [];
         this.convertedBlobs = [];
         this.allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/svg+xml'];
+        this.isProcessing = false;
         
+        console.log('WebPConverter initialized');
         this.init();
     }
 
@@ -37,6 +41,7 @@ class WebPConverter {
         await this.loadComponents();
         this.getElements();
         this.setupEventListeners();
+        this.setupFAQ();
     }
 
     async loadComponents() {
@@ -82,47 +87,35 @@ class WebPConverter {
                     mobileMenuToggle.setAttribute('aria-expanded', 'false');
                 }
             });
-
-            // Close mobile menu when clicking on a link
-            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-            mobileMenuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                    hamburgerIcon.classList.remove('hidden');
-                    closeIcon.classList.add('hidden');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                });
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!mobileMenuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                        hamburgerIcon.classList.remove('hidden');
-                        closeIcon.classList.add('hidden');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                }
-            });
         }
     }
 
     getElements() {
+        console.log('Getting DOM elements...');
+        
+        this.uploadArea = document.getElementById('upload-area');
         this.fileInput = document.getElementById('file-input');
-        this.fileLabel = document.getElementById('file-label');
-        this.fileListContainer = document.getElementById('file-list-container');
+        this.settingsSection = document.getElementById('settings-section');
+        this.fileListSection = document.getElementById('file-list-section');
         this.fileList = document.getElementById('file-list');
         this.qualitySlider = document.getElementById('quality-slider');
         this.qualityValueSpan = document.getElementById('quality-value');
-        this.convertButton = document.getElementById('convert-button');
-        this.downloadAllButton = document.getElementById('download-all-button');
-        this.clearButton = document.getElementById('clear-button');
-        this.conversionCanvas = document.getElementById('conversion-canvas');
+        this.convertAllBtn = document.getElementById('convert-all-btn');
+        this.downloadAllBtn = document.getElementById('download-all-btn');
         this.messageBox = document.getElementById('message-box');
+        this.conversionCanvas = document.getElementById('conversion-canvas');
+        
+        // Debug logs
+        console.log('Upload area found:', !!this.uploadArea);
+        console.log('File input found:', !!this.fileInput);
+        console.log('Convert button found:', !!this.convertAllBtn);
+        console.log('Quality slider found:', !!this.qualitySlider);
         
         if (this.conversionCanvas) {
             this.ctx = this.conversionCanvas.getContext('2d');
+            console.log('Canvas context created:', !!this.ctx);
+        } else {
+            console.error('Canvas not found!');
         }
     }
 
@@ -130,47 +123,73 @@ class WebPConverter {
         // Quality slider
         if (this.qualitySlider && this.qualityValueSpan) {
             this.qualitySlider.addEventListener('input', () => {
-                this.qualityValueSpan.textContent = this.qualitySlider.value;
+                this.qualityValueSpan.textContent = this.qualitySlider.value + '%';
             });
         }
 
-        // File input
+        // File input change
         if (this.fileInput) {
-            this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
+            this.fileInput.addEventListener('change', (e) => {
+                console.log('File input change event triggered');
+                if (e.target.files && e.target.files.length > 0) {
+                    this.handleFiles(e.target.files);
+                    e.target.value = '';
+                }
+            });
         }
 
         // Drag and drop
-        if (this.fileLabel) {
-            this.fileLabel.addEventListener('dragover', (e) => {
+        if (this.uploadArea) {
+            this.uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                this.fileLabel.classList.add('dragover');
+                this.uploadArea.classList.add('dragover');
             });
 
-            this.fileLabel.addEventListener('dragleave', (e) => {
+            this.uploadArea.addEventListener('dragleave', (e) => {
                 e.preventDefault();
-                this.fileLabel.classList.remove('dragover');
+                this.uploadArea.classList.remove('dragover');
             });
 
-            this.fileLabel.addEventListener('drop', (e) => {
+            this.uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
-                this.fileLabel.classList.remove('dragover');
-                if (e.dataTransfer.files.length > 0) {
+                e.stopPropagation();
+                this.uploadArea.classList.remove('dragover');
+                console.log('Drop event triggered');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                     this.handleFiles(e.dataTransfer.files);
+                }
+            });
+
+            // Click to upload
+            this.uploadArea.addEventListener('click', (e) => {
+                if (e.target === this.fileInput) {
+                    return;
+                }
+                
+                console.log('Upload area clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (this.fileInput) {
+                    this.fileInput.click();
                 }
             });
         }
 
         // Buttons
-        if (this.convertButton) {
-            this.convertButton.addEventListener('click', () => this.convertFiles());
+        if (this.convertAllBtn) {
+            this.convertAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Convert button clicked, files count:', this.filesToConvert.length);
+                this.convertFiles();
+            });
         }
 
-        if (this.downloadAllButton) {
-            this.downloadAllButton.addEventListener('click', () => this.downloadAllAsZip());
-        }
-
-        if (this.clearButton) {
-            this.clearButton.addEventListener('click', () => this.clearAll());
+        if (this.downloadAllBtn) {
+            this.downloadAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.downloadAllAsZip();
+            });
         }
 
         // File list event delegation
@@ -179,57 +198,84 @@ class WebPConverter {
         }
     }
 
-    showMessage(message, type = 'info') {
-        if (!this.messageBox) return;
-        
-        this.messageBox.textContent = message;
-        this.messageBox.className = 'message-box show';
-        
-        // Set background color based on type
-        const colors = {
-            'error': '#dc2626',
-            'success': '#16a34a',
-            'info': '#233dff',
-            'warning': '#d97706'
-        };
-        
-        this.messageBox.style.backgroundColor = colors[type] || colors.info;
-        
-        // Auto hide after 4 seconds
+    setupFAQ() {
         setTimeout(() => {
-            this.messageBox.className = 'message-box';
-        }, 4000);
-    }
-
-    formatBytes(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                if (question) {
+                    question.addEventListener('click', () => {
+                        // Close all other items
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item) {
+                                otherItem.classList.remove('open');
+                            }
+                        });
+                        
+                        // Toggle current item
+                        item.classList.toggle('open');
+                    });
+                }
+            });
+        }, 100);
     }
 
     handleFiles(files) {
+        console.log('handleFiles called with:', files.length, 'files');
+        
         const selectedFiles = Array.from(files);
-        const invalidFiles = selectedFiles.filter(file => !this.allowedFileTypes.includes(file.type));
-        this.filesToConvert = selectedFiles.filter(file => this.allowedFileTypes.includes(file.type));
+        const invalidFiles = selectedFiles.filter(file => {
+            console.log('Checking file:', file.name, 'Type:', file.type);
+            return !this.allowedFileTypes.includes(file.type);
+        });
+        const validFiles = selectedFiles.filter(file => this.allowedFileTypes.includes(file.type));
+        
+        console.log('Valid files:', validFiles.length, 'Invalid files:', invalidFiles.length);
         
         if (invalidFiles.length > 0) {
             const invalidNames = invalidFiles.map(f => f.name).join(', ');
-            this.showMessage(`The following file(s) were ignored: ${invalidNames}. Please upload JPG, PNG, GIF, BMP, or SVG files.`, 'error');
+            this.showMessage(`The following file(s) were ignored: ${invalidNames}. Please upload JPG, PNG, GIF, BMP, or SVG files.`, 'warning');
         }
 
+        if (validFiles.length > 0) {
+            this.filesToConvert = [...this.filesToConvert, ...validFiles];
+            console.log('Total files after adding:', this.filesToConvert.length);
+            this.updateUI();
+            this.showMessage(`${validFiles.length} file(s) selected. Ready to convert.`, 'success');
+        } else if (selectedFiles.length > 0) {
+            this.showMessage('No valid image files selected.', 'error');
+        }
+    }
+
+    updateUI() {
         if (this.filesToConvert.length > 0) {
-            this.fileListContainer.classList.remove('hidden');
+            this.fileListSection.classList.remove('hidden');
             this.updateFileList();
-            this.convertButton.disabled = false;
-            this.showMessage(`${this.filesToConvert.length} file(s) selected. Ready to convert.`, 'info');
+            
+            // Enable convert button
+            this.convertAllBtn.disabled = false;
+            this.convertAllBtn.innerHTML = `
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Convert All to WebP
+            `;
         } else {
-            this.fileListContainer.classList.add('hidden');
-            this.convertButton.disabled = true;
-            if (selectedFiles.length > 0) {
-                this.showMessage('No valid image files selected.', 'error');
-            }
+            this.fileListSection.classList.add('hidden');
+            
+            // Disable convert button
+            this.convertAllBtn.disabled = true;
+            this.convertAllBtn.innerHTML = `
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Select Images to Enable Conversion
+            `;
         }
     }
 
@@ -239,93 +285,55 @@ class WebPConverter {
         this.fileList.innerHTML = '';
         this.filesToConvert.forEach((file, index) => {
             const fileCard = document.createElement('div');
-            fileCard.className = 'file-card flex flex-col items-center space-y-2';
+            fileCard.className = 'file-card';
             fileCard.innerHTML = `
-                <div class="flex items-center justify-between w-full px-2">
-                    <div class="text-sm font-medium truncate w-5/6" title="${file.name}">${file.name}</div>
-                    <button class="remove-button text-gray-500 hover:text-red-600 transition-colors" data-index="${index}" title="Remove file">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                <div class="file-header">
+                    <div class="file-info">
+                        <div class="file-name" title="${file.name}">${file.name}</div>
+                        <div class="file-details">${this.formatBytes(file.size)} • ${file.type.split('/')[1].toUpperCase()}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="remove-file-btn" data-index="${index}" title="Remove file">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="w-full h-2 bg-gray-200 rounded-full">
-                    <div id="progress-${index}" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%;"></div>
+                
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span class="progress-status" id="status-${index}">Ready to convert</span>
+                        <span class="progress-percentage" id="percentage-${index}">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-${index}" style="width: 0%;"></div>
+                    </div>
                 </div>
-                <span id="status-${index}" class="text-xs text-gray-500">Pending</span>
-                <button id="download-${index}" data-index="${index}" class="w-full px-4 py-2 bg-green-500 text-white font-medium rounded-lg text-sm transition-colors hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed" disabled>
-                    Download
+                
+                <div class="conversion-results" id="results-${index}" style="display: none;">
+                    <div class="result-item">
+                        <div class="result-label">Original Size</div>
+                        <div class="result-value" id="original-size-${index}">${this.formatBytes(file.size)}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">WebP Size</div>
+                        <div class="result-value success" id="new-size-${index}">--</div>
+                    </div>
+                </div>
+                
+                <button class="download-button" id="download-${index}" data-index="${index}" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download WebP
                 </button>
             `;
             this.fileList.appendChild(fileCard);
         });
-    }
-
-    handleFileListClick(e) {
-        const button = e.target.closest('button');
-        if (!button) return;
-        
-        const index = parseInt(button.dataset.index);
-
-        // Handle single download
-        if (button.id && button.id.startsWith('download-')) {
-            const file = this.convertedBlobs.find(f => f.originalIndex === index);
-            if (file) {
-                this.downloadFile(file);
-            }
-        }
-        
-        // Handle remove
-        if (button.classList.contains('remove-button')) {
-            this.removeFile(index);
-        }
-    }
-
-    removeFile(index) {
-        this.filesToConvert.splice(index, 1);
-        
-        // Remove from convertedBlobs if it exists
-        const convertedBlobIndex = this.convertedBlobs.findIndex(f => f.originalIndex === index);
-        if (convertedBlobIndex > -1) {
-            this.convertedBlobs.splice(convertedBlobIndex, 1);
-        }
-        
-        this.updateFileList();
-        
-        if (this.filesToConvert.length === 0) {
-            this.clearAll();
-        } else {
-            this.showMessage(`${this.filesToConvert.length} file(s) remaining.`, 'info');
-        }
-    }
-
-    downloadFile(file) {
-        const downloadUrl = URL.createObjectURL(file.blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(downloadUrl);
-        this.showMessage(`Download of "${file.name}" started.`, 'success');
-    }
-
-    clearAll() {
-        if (this.fileInput) this.fileInput.value = '';
-        this.filesToConvert = [];
-        this.convertedBlobs = [];
-        
-        if (this.fileListContainer) this.fileListContainer.classList.add('hidden');
-        if (this.fileList) this.fileList.innerHTML = '';
-        if (this.convertButton) this.convertButton.disabled = true;
-        if (this.downloadAllButton) {
-            this.downloadAllButton.classList.add('hidden');
-            this.downloadAllButton.disabled = true;
-        }
-        
-        this.showMessage('All files cleared.', 'info');
     }
 
     async convertFiles() {
@@ -334,10 +342,17 @@ class WebPConverter {
             return;
         }
 
-        this.convertButton.disabled = true;
-        this.downloadAllButton.disabled = true;
-        this.downloadAllButton.classList.add('hidden');
-        this.showMessage('Converting images... Please wait.', 'info');
+        if (this.isProcessing) {
+            this.showMessage('Conversion is already in progress.', 'warning');
+            return;
+        }
+
+        this.isProcessing = true;
+        this.convertAllBtn.disabled = true;
+        this.downloadAllBtn.disabled = true;
+        this.downloadAllBtn.classList.add('hidden');
+        
+        this.showMessage('Converting images to WebP... Please wait.', 'info');
         
         this.convertedBlobs = [];
         const quality = parseInt(this.qualitySlider.value) / 100;
@@ -347,15 +362,20 @@ class WebPConverter {
                 await this.convertSingleFile(i, quality);
             }
 
-            this.showMessage('All conversions complete!', 'success');
-            this.downloadAllButton.classList.remove('hidden');
-            this.downloadAllButton.disabled = false;
+            const successCount = this.convertedBlobs.length;
+            this.showMessage(`Conversion complete! ${successCount} file(s) converted to WebP successfully.`, 'success');
+            
+            if (successCount > 0) {
+                this.downloadAllBtn.classList.remove('hidden');
+                this.downloadAllBtn.disabled = false;
+            }
             
         } catch (error) {
             console.error('Conversion process failed:', error);
             this.showMessage(`Conversion failed: ${error.message}`, 'error');
         } finally {
-            this.convertButton.disabled = false;
+            this.isProcessing = false;
+            this.convertAllBtn.disabled = false;
         }
     }
 
@@ -366,7 +386,10 @@ class WebPConverter {
             
             const progressBar = document.getElementById(`progress-${index}`);
             const statusText = document.getElementById(`status-${index}`);
+            const percentageText = document.getElementById(`percentage-${index}`);
             const downloadButton = document.getElementById(`download-${index}`);
+            const resultsSection = document.getElementById(`results-${index}`);
+            const newSizeText = document.getElementById(`new-size-${index}`);
 
             if (!progressBar || !statusText || !downloadButton) {
                 console.error('UI elements not found for index:', index);
@@ -374,8 +397,9 @@ class WebPConverter {
                 return;
             }
 
-            statusText.textContent = "Converting...";
+            statusText.textContent = "Converting to WebP...";
             progressBar.style.width = '50%';
+            percentageText.textContent = '50%';
 
             const img = new Image();
             const reader = new FileReader();
@@ -383,34 +407,73 @@ class WebPConverter {
             
             reader.onload = (e) => {
                 img.onload = () => {
-                    this.conversionCanvas.width = img.width;
-                    this.conversionCanvas.height = img.height;
-                    this.ctx.drawImage(img, 0, 0);
+                    try {
+                        // Set canvas dimensions
+                        this.conversionCanvas.width = img.width;
+                        this.conversionCanvas.height = img.height;
+                        
+                        // Enable high-quality rendering
+                        this.ctx.imageSmoothingEnabled = true;
+                        this.ctx.imageSmoothingQuality = 'high';
+                        
+                        // Draw image
+                        this.ctx.drawImage(img, 0, 0);
 
-                    this.conversionCanvas.toBlob((blob) => {
-                        if (blob) {
-                            const webpFileName = `${originalName}.webp`;
-                            const newSize = blob.size;
-                            const sizeDifference = originalSize - newSize;
-                            const percentageReduction = ((sizeDifference / originalSize) * 100).toFixed(1);
+                        // Always convert to WebP
+                        const mimeType = 'image/webp';
+                        const fileExtension = 'webp';
 
-                            this.convertedBlobs.push({ 
-                                name: webpFileName, 
-                                blob: blob, 
-                                originalIndex: index 
-                            });
-                            
-                            progressBar.style.width = '100%';
-                            statusText.textContent = `Complete: ${this.formatBytes(newSize)} (-${percentageReduction}%)`;
-                            downloadButton.disabled = false;
-                            
-                            resolve();
-                        } else {
-                            console.error('Canvas toBlob failed:', file.name);
-                            statusText.textContent = `Error: Conversion failed.`;
-                            reject(new Error(`Failed to convert ${file.name}.`));
-                        }
-                    }, 'image/webp', quality);
+                        // Convert to blob
+                        this.conversionCanvas.toBlob((blob) => {
+                            if (blob) {
+                                const convertedFileName = `${originalName}.${fileExtension}`;
+                                const newSize = blob.size;
+                                const sizeDifference = originalSize - newSize;
+                                const percentageReduction = ((sizeDifference / originalSize) * 100).toFixed(1);
+
+                                this.convertedBlobs.push({ 
+                                    name: convertedFileName, 
+                                    blob: blob, 
+                                    originalIndex: index,
+                                    originalSize: originalSize,
+                                    newSize: newSize,
+                                    reduction: percentageReduction
+                                });
+                                
+                                progressBar.style.width = '100%';
+                                percentageText.textContent = '100%';
+                                statusText.textContent = `Complete`;
+                                
+                                // Show results
+                                resultsSection.style.display = 'grid';
+                                newSizeText.textContent = this.formatBytes(newSize);
+                                
+                                // Add size reduction indicator
+                                const reduction = Math.abs(parseFloat(percentageReduction));
+                                let reductionClass = 'moderate';
+                                if (reduction > 50) reductionClass = 'excellent';
+                                else if (reduction > 25) reductionClass = 'good';
+                                
+                                if (sizeDifference > 0) {
+                                    newSizeText.innerHTML += ` <span class="size-reduction ${reductionClass}">-${percentageReduction}%</span>`;
+                                } else {
+                                    newSizeText.innerHTML += ` <span class="size-reduction moderate">+${Math.abs(percentageReduction)}%</span>`;
+                                }
+                                
+                                downloadButton.disabled = false;
+                                
+                                resolve();
+                            } else {
+                                console.error('Canvas toBlob failed:', file.name);
+                                statusText.textContent = `Error: Conversion failed.`;
+                                reject(new Error(`Failed to convert ${file.name}.`));
+                            }
+                        }, mimeType, quality);
+                    } catch (error) {
+                        console.error('Canvas error:', error);
+                        statusText.textContent = `Error: ${error.message}`;
+                        reject(error);
+                    }
                 };
                 
                 img.onerror = () => {
@@ -432,10 +495,74 @@ class WebPConverter {
         });
     }
 
-    async downloadAllAsZip() {
-        if (this.convertedBlobs.length === 0) return;
+    handleFileListClick(e) {
+        const button = e.target.closest('button');
+        if (!button) return;
         
-        this.downloadAllButton.disabled = true;
+        const index = parseInt(button.dataset.index);
+
+        // Handle single download
+        if (button.id && button.id.startsWith('download-')) {
+            const file = this.convertedBlobs.find(f => f.originalIndex === index);
+            if (file) {
+                this.downloadFile(file);
+            }
+        }
+        
+        // Handle remove
+        if (button.classList.contains('remove-file-btn')) {
+            this.removeFile(index);
+        }
+    }
+
+    removeFile(index) {
+        this.filesToConvert.splice(index, 1);
+        
+        // Remove from convertedBlobs if it exists
+        const convertedBlobIndex = this.convertedBlobs.findIndex(f => f.originalIndex === index);
+        if (convertedBlobIndex > -1) {
+            this.convertedBlobs.splice(convertedBlobIndex, 1);
+        }
+        
+        this.updateUI();
+        
+        if (this.filesToConvert.length === 0) {
+            this.downloadAllBtn.classList.add('hidden');
+            this.downloadAllBtn.disabled = true;
+        } else {
+            this.showMessage(`${this.filesToConvert.length} file(s) remaining.`, 'info');
+        }
+    }
+
+    downloadFile(file) {
+        try {
+            const downloadUrl = URL.createObjectURL(file.blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
+            this.showMessage(`Downloaded: ${file.name}`, 'success');
+        } catch (error) {
+            console.error('Download failed:', error);
+            this.showMessage('Download failed. Please try again.', 'error');
+        }
+    }
+
+    async downloadAllAsZip() {
+        if (this.convertedBlobs.length === 0) {
+            this.showMessage('No files ready for download.', 'error');
+            return;
+        }
+        
+        if (this.convertedBlobs.length === 1) {
+            this.downloadFile(this.convertedBlobs[0]);
+            return;
+        }
+
+        this.downloadAllBtn.disabled = true;
         this.showMessage('Generating zip file...', 'info');
 
         try {
@@ -449,20 +576,39 @@ class WebPConverter {
             const downloadUrl = URL.createObjectURL(zipBlob);
             const a = document.createElement('a');
             a.href = downloadUrl;
-            a.download = 'converted_images.zip';
+            a.download = 'webp_converted_images.zip';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(downloadUrl);
 
-            this.showMessage('Download of "converted_images.zip" started.', 'success');
+            this.showMessage(`Downloaded ${this.convertedBlobs.length} WebP files as ZIP.`, 'success');
             
         } catch (error) {
             console.error('Zip generation failed:', error);
-            this.showMessage(`Zip generation failed: ${error.message}`, 'error');
+            this.showMessage('Zip generation failed. Please try again.', 'error');
         } finally {
-            this.downloadAllButton.disabled = false;
+            this.downloadAllBtn.disabled = false;
         }
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    showMessage(message, type = 'info') {
+        if (!this.messageBox) return;
+        
+        this.messageBox.textContent = message;
+        this.messageBox.className = `message-box show ${type}`;
+        
+        setTimeout(() => {
+            this.messageBox.className = 'message-box';
+        }, 4000);
     }
 }
 

@@ -4,31 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindbrust - Free & Simple Online Tools</title>
-    <meta name="description"
-        content="A collection of free, simple, and powerful online tools to help you with your daily tasks. Convert images, edit PDFs, and more.">
-    <meta name="keywords"
-        content="online tools, free tools, webp converter, pdf tools, image compressor, background remover">
-    <link rel="canonical" href="https://www.mindbrust.com/index.html">
-
-    <meta property="og:title" content="Mindbrust - Free & Simple Online Tools">
-    <meta property="og:description"
-        content="A collection of free, simple, and powerful online tools to help you with your daily tasks.">
+    <title>Free WebP Converter - Convert JPG, PNG to WebP Online | Mindbrust</title>
+    <meta name="description" content="Convert JPG, PNG, GIF, BMP, and SVG images to WebP format online for free. Reduce file size by up to 80% while maintaining quality.">
+    <meta name="keywords" content="webp converter, convert to webp, jpg to webp, png to webp, image converter, webp online">
+    
+    <link rel="canonical" href="https://www.mindbrust.com/webp-converter.html">
+    
+    <meta property="og:title" content="Free WebP Converter - Convert Images to WebP | Mindbrust">
+    <meta property="og:description" content="Convert JPG, PNG, GIF, BMP, and SVG images to WebP format online. Reduce file size while maintaining quality.">
     <meta property="og:image" content="https://www.mindbrust.com/assets/images/logo.svg">
-    <meta property="og:url" content="https://www.mindbrust.com/index.html">
+    <meta property="og:url" content="https://www.mindbrust.com/webp-converter.html">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mindbrust - Free & Simple Online Tools">
-    <meta name="twitter:description"
-        content="A collection of free, simple, and powerful online tools to help you with your daily tasks.">
+    <meta name="twitter:title" content="Free WebP Converter - Convert Images to WebP">
+    <meta name="twitter:description" content="Convert JPG, PNG, GIF, BMP, and SVG images to WebP format online.">
     <meta name="twitter:image" content="https://www.mindbrust.com/assets/images/logo.svg">
 
     <link rel="stylesheet" href="css/styles.css?v=1.0.0">
-    <link rel="stylesheet" href="css/homepage.css?v=1.0.0">
+    <link rel="stylesheet" href="css/webp-converter.css?v=1.0.0">
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -39,109 +35,215 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://www.mindbrust.com/",
-      "name": "Mindbrust",
-      "description": "Free and simple online tools for various tasks.",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://www.mindbrust.com/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
+      "@type": "SoftwareApplication",
+      "name": "WebP Converter",
+      "description": "Free online tool to convert images to WebP format",
+      "url": "https://www.mindbrust.com/webp-converter.html",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
       }
     }
     </script>
 </head>
 
-<body class="h-full antialiased text-gray-800 bg-gray-100">
-    <!-- <div id="adblock-overlay" class="adblock-overlay hidden">
-        <div class="adblock-modal">
-            <div class="adblock-content">
-                <div class="adblock-icon">⚠️</div>
-                <h2>Ad Blocker Detected</h2>
-                <p>To use our free tools, please disable your ad blocker for this site. We use ads to keep our services
-                    free and accessible to everyone.</p>
-                <div class="adblock-buttons">
-                    <button id="adblock-refresh" class="adblock-btn primary">I've Disabled It</button>
-                    <button id="adblock-continue" class="adblock-btn secondary">Continue Anyway</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
+<body class="bg-gray-50">
+    <!-- Message Box -->
     <div id="message-box" class="message-box"></div>
 
-    <div id="header-container"></div>
+    <div id="page-wrapper" class="flex flex-col min-h-screen">
+        <!-- Header -->
+        <div id="header-container" class="flex-shrink-0"></div>
 
-    <div class="flex flex-col items-center py-16 sm:py-20 px-4 sm:px-6">
-        <main class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-6 sm:p-8">
-            <div class="flex items-center justify-center mb-6 sm:mb-8">
-                <div class="flex items-center space-x-2">
-                    <svg class="h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                        fill="currentColor">
-                        <path
-                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 15H7v-2h10v2zm0-4H7v-2h10v2zM7 8h10V6H7v2z" />
-                    </svg>
-                    <h1 class="text-3xl font-bold text-gray-900">WebP Converter</h1>
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <div class="converter-hero">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">WebP Converter</h1>
+                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Convert JPG, PNG, GIF, BMP & SVG to modern WebP format</p>
                 </div>
             </div>
-            <div class="text-center mb-6 sm:mb-8">
-                <p class="text-gray-500">Convert JPG, PNG, and other images to the modern WebP format.</p>
+
+            <!-- Tool Section -->
+            <div class="tool-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="tool-container">
+                        <!-- Upload Section -->
+                        <div class="upload-section">
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-content">
+                                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7,10 12,15 17,10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <h2 class="upload-title">Choose Images to Convert</h2>
+                                    <p class="upload-subtitle">Drag & drop images here or click to browse</p>
+                                    <div class="supported-formats">
+                                        <span class="format-tag">JPG</span>
+                                        <span class="format-tag">PNG</span>
+                                        <span class="format-tag">GIF</span>
+                                        <span class="format-tag">BMP</span>
+                                        <span class="format-tag">SVG</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="file-input" class="file-input" multiple accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
+                            </div>
+                        </div>
+
+                        <!-- Conversion Settings - Always Visible -->
+                        <div id="settings-section" class="settings-section">
+                            <h3 class="settings-title">Conversion Settings</h3>
+                            <div class="settings-grid-single">
+                                <div class="setting-item">
+                                    <label class="setting-label">Quality Level</label>
+                                    <div class="setting-input-group">
+                                        <input type="range" id="quality-slider" class="setting-range" min="10" max="100" value="80">
+                                        <span class="setting-value" id="quality-value">80%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="convert-all-btn" class="convert-button" disabled>
+                                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7,10 12,15 17,10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Select Images to Enable Conversion
+                            </button>
+                        </div>
+
+                        <!-- File List -->
+                        <div id="file-list-section" class="file-list-section hidden">
+                            <div class="section-header">
+                                <h3 class="section-title">Conversion Results</h3>
+                                <button id="download-all-btn" class="download-all-button hidden">
+                                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7,10 12,15 17,10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Download All
+                                </button>
+                            </div>
+                            <div id="file-list" class="file-list"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="relative mb-6">
-                <input type="file" id="file-input" class="file-input" multiple
-                    accept=".png, .jpg, .jpeg, .gif, .bmp, .svg" />
-                <label for="file-input" id="file-label" class="file-label text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-2 text-gray-400" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 21v-8M17 16l-5 5-5-5" />
-                    </svg>
-                    <span class="text-lg font-medium">Drag & drop images here or click to browse</span>
-                    <span class="text-sm mt-1">Supports bulk conversion</span>
-                </label>
-            </div>
+            <!-- How It Works Section -->
+            <section class="how-it-works-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-heading">How It Works</h2>
+                    <div class="steps-grid">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Upload Images</h3>
+                            <p class="step-description">Select or drag and drop your JPG, PNG, GIF, BMP, or SVG images</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Adjust Quality</h3>
+                            <p class="step-description">Choose your desired quality level and output format</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Download Results</h3>
+                            <p class="step-description">Get your converted WebP images with reduced file size</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-            <div class="mb-6">
-                <label for="quality-slider" class="block text-sm font-medium text-gray-700 mb-2">
-                    Quality: <span id="quality-value">80</span>%
-                </label>
-                <input type="range" id="quality-slider" min="1" max="100" value="80"
-                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
-            </div>
-
-            <div id="file-list-container" class="mb-6 hidden">
-                <h2 class="text-lg font-semibold text-gray-900 mb-2">Selected Files</h2>
-                <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button id="convert-button"
-                    class="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
-                    Start Conversion
-                </button>
-                <button id="download-all-button"
-                    class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden disabled:bg-green-400 disabled:cursor-not-allowed"
-                    disabled>
-                    Download All as Zip
-                </button>
-                <button id="clear-button"
-                    class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors">
-                    Clear
-                </button>
-            </div>
-
-            <canvas id="conversion-canvas" class="hidden"></canvas>
+            <!-- FAQ Section -->
+            <section class="faq-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-heading">Frequently Asked Questions</h2>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What is WebP format and why should I use it?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>WebP is a modern image format developed by Google that provides superior compression compared to JPEG and PNG. It can reduce file sizes by 25-80% while maintaining the same visual quality, making websites load faster.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Which image formats can I convert to WebP?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Our converter supports JPG, JPEG, PNG, GIF, BMP, and SVG formats. You can convert single images or multiple images at once using our bulk conversion feature.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Is the conversion process secure and private?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Yes! All image processing happens directly in your browser using client-side JavaScript. Your images are never uploaded to our servers, ensuring complete privacy and security of your files.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>How much smaller will my WebP files be?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>WebP typically reduces file sizes by 25-35% compared to JPEG and up to 80% compared to PNG, depending on the image content and quality settings. The exact reduction varies by image type and complexity.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Can I convert multiple images at once?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Absolutely! You can select multiple images and convert them all with the same quality settings. Use the "Download All" feature to get a zip file containing all your converted WebP images.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What quality setting should I use?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>For most images, a quality setting of 80-85% provides an excellent balance between file size and visual quality. Use 90-95% for high-quality images or 70-80% for web optimization where smaller file sizes are prioritized.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+
+        <!-- Footer -->
+        <div id="footer-container" class="flex-shrink-0"></div>
     </div>
 
-    <div id="footer-container"></div>
+    <!-- Hidden Canvas for Processing -->
+    <canvas id="conversion-canvas" style="display: none;"></canvas>
 
-    <div class="ad-test" style="width: 1px; height: 1px; position: absolute; left: -1000px;">
-        <ins class="adsbygoogle" style="display: block; width: 1px; height: 1px;"></ins>
-    </div>
-
-    <!-- <script src="js/adblock-detector.js?v=1.0.0"></script> -->
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="js/webp-converter.js?v=1.0.0"></script>
 </body>
