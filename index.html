@@ -52,6 +52,54 @@
     </script>
     <script src="js/ads-loader.js"></script>
 
+    <style>
+        /* Enhanced icon animations */
+        .tool-card-icon {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tool-card:hover .tool-card-icon {
+            transform: scale(1.1) rotate(-5deg);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        }
+        
+        .feature-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover .feature-icon {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        /* Gradient backgrounds for icons */
+        .webp-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .compress-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .pdf-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .speed-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+        }
+        
+        .privacy-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        }
+        
+        .free-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50">
@@ -81,56 +129,69 @@
                         <p class="mt-4 text-lg text-gray-600">Designed for simplicity and power.</p>
                     </div>
                     <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-2 justify-items-center">
-                        <!-- Tool Card: WebP Converter -->
+                        
+                        <!-- Tool Card: WebP Converter - Enhanced Icon -->
                         <a href="webp-converter.html" class="tool-card">
-                            <div class="tool-card-icon bg-indigo-100 text-indigo-600">
-                                <!-- Icon for WebP -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <div class="tool-card-icon webp-gradient text-white">
+                                <!-- More detailed WebP conversion icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                    <path d="M12 2L8 6h3v6h2V6h3l-4-4z" opacity="0.6"/>
                                 </svg>
                             </div>
                             <h3 class="tool-card-title">WebP Converter</h3>
                             <p class="tool-card-description">Convert JPG, PNG, and more to the modern, efficient WebP
-                                format.</p>
+                                format with up to 80% size reduction.</p>
                         </a>
 
-                        <!-- Tool Card: Image Compressor -->
+                        <!-- Tool Card: Image Compressor - Enhanced Icon -->
                         <a href="image-compressor.html" class="tool-card">
-                            <div class="tool-card-icon bg-green-100 text-green-600">
-                                <!-- Icon for Image Compressor -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                            <div class="tool-card-icon compress-gradient text-white">
+                                <!-- More detailed compression icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 8V4h4l-1.5 1.5L9 8H4zm6 12v-4h5l-1.5-1.5L16 12v4h-6z" opacity="0.7"/>
+                                    <path d="M20 4v4h-5l1.5-1.5L14 4h6zM4 20v-4h5l-1.5 1.5L10 20H4z"/>
+                                    <circle cx="12" cy="12" r="2" opacity="0.5"/>
                                 </svg>
                             </div>
                             <h3 class="tool-card-title">Image Compressor</h3>
-                            <p class="tool-card-description">Compress images to specific file sizes (like 100KB) with minimal quality loss.</p>
+                            <p class="tool-card-description">Compress images to specific file sizes (like 100KB) with minimal quality loss using intelligent algorithms.</p>
                         </a>
 
-                        <!-- Coming Soon Tools -->
+                        <!-- Coming Soon Tools - Enhanced Icons -->
                         <div class="tool-card coming-soon">
-                            <div class="tool-card-icon bg-red-100 text-red-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            <div class="tool-card-icon pdf-gradient text-white">
+                                <!-- More detailed PDF icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 2h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" opacity="0.8"/>
+                                    <path d="M14 2v5h5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.6"/>
+                                    <rect x="8" y="10" width="8" height="1.5" rx="0.75" opacity="0.7"/>
+                                    <rect x="8" y="12.5" width="6" height="1.5" rx="0.75" opacity="0.7"/>
+                                    <rect x="8" y="15" width="7" height="1.5" rx="0.75" opacity="0.7"/>
+                                </svg>
                             </div>
                             <h3 class="tool-card-title">PDF Tools</h3>
-                            <p class="tool-card-description">Merge, split, compress, and edit your PDF files with ease.</p>
+                            <p class="tool-card-description">Merge, split, compress, and edit your PDF files with ease and precision.</p>
                         </div>
                         
                         <div class="tool-card coming-soon">
-                            <div class="tool-card-icon bg-yellow-100 text-yellow-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l1.414 1.414M17 5l1.414-1.414M19 12a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <div class="tool-card-icon bg-gradient text-white">
+                                <!-- More detailed background removal icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="9" cy="9" r="7" opacity="0.3" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="4 2"/>
+                                    <circle cx="9" cy="9" r="4" opacity="0.8"/>
+                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none" opacity="0.6"/>
+                                    <path d="M15 9a6 6 0 1 1-12 0 6 6 0 0 1 12 0z" opacity="0.2"/>
+                                </svg>
                             </div>
                             <h3 class="tool-card-title">Background Remover</h3>
-                            <p class="tool-card-description">Automatically remove the background from any image.</p>
+                            <p class="tool-card-description">Automatically remove backgrounds from any image using advanced AI technology.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Features Section -->
+            <!-- Features Section - Enhanced Icons -->
             <section class="bg-white py-16 sm:py-20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
@@ -139,30 +200,37 @@
                     </div>
                     <div class="mt-12 grid gap-10 md:grid-cols-3">
                         <div class="feature-item text-center">
-                            <div class="feature-icon text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg></div>
+                            <div class="feature-icon speed-gradient text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto">
+                                <!-- Enhanced speed icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" opacity="0.9"/>
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
+                                </svg>
+                            </div>
                             <h3 class="feature-title">Blazing Fast</h3>
                             <p class="feature-description">Our tools are optimized for speed, so you can get your tasks
                                 done in seconds, not minutes.</p>
                         </div>
                         <div class="feature-item text-center">
-                            <div class="feature-icon text-green-500"><svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg></div>
+                            <div class="feature-icon privacy-gradient text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto">
+                                <!-- Enhanced privacy/security icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" opacity="0.9"/>
+                                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" opacity="0.7"/>
+                                </svg>
+                            </div>
                             <h3 class="feature-title">Privacy Focused</h3>
                             <p class="feature-description">We respect your privacy. All processing happens in your browser - no files are uploaded to our servers.</p>
                         </div>
                         <div class="feature-item text-center">
-                            <div class="feature-icon text-yellow-500"><svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8z" />
-                                </svg></div>
+                            <div class="feature-icon free-gradient text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto">
+                                <!-- Enhanced free/money icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="10" opacity="0.8"/>
+                                    <path d="M15 9.5a3 3 0 1 1-6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                    <path d="M12 7v10M9 14.5h6" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.7"/>
+                                </svg>
+                            </div>
                             <h3 class="feature-title">Completely Free</h3>
                             <p class="feature-description">No subscriptions, no hidden fees. All our tools are 100% free
                                 to use for everyone, forever.</p>
