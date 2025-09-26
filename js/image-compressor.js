@@ -525,7 +525,7 @@ class ImageCompressor {
                     <span class="progress-status">${statusText}</span>
                     <span class="progress-percentage">${progressWidth}%</span>
                 </div>
-                <div class="progress-bar">
+                <div class.progress-bar">
                     <div class="progress-fill" style="width: ${progressWidth}%"></div>
                 </div>
             </div>
