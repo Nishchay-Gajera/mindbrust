@@ -76,19 +76,11 @@ class ImageCompressor {
 
         if (mobileMenuToggle && mobileMenu) {
             mobileMenuToggle.addEventListener('click', function() {
-                const isHidden = mobileMenu.classList.contains('hidden');
-                
-                if (isHidden) {
-                    mobileMenu.classList.remove('hidden');
-                    hamburgerIcon.classList.add('hidden');
-                    closeIcon.classList.remove('hidden');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'true');
-                } else {
-                    mobileMenu.classList.add('hidden');
-                    hamburgerIcon.classList.remove('hidden');
-                    closeIcon.classList.add('hidden');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                }
+                mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('hidden');
+                closeIcon.classList.toggle('hidden');
+                const isExpanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
+                mobileMenuToggle.setAttribute('aria-expanded', !isExpanded);
             });
         }
     }
