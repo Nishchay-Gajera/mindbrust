@@ -498,8 +498,6 @@ class ImageCompressor {
 
         const statusText = this.getStatusText(fileData);
         const progressWidth = fileData.progress || 0;
-        const compressionRatio = fileData.compressionRatio || 0;
-        const qualityClass = this.getQualityClass(compressionRatio);
 
         let targetSizeDisplay = '';
         if (this.compressionMode === 'individual' && fileData.individualTargetSize) {
@@ -511,7 +509,27 @@ class ImageCompressor {
                 <div class="file-info">
                     <div class="file-name" title="${fileData.file.name}">${fileData.file.name}</div>
                     <div class="file-details">
-                        ${fileData.status === 'completed' ? `
+                        ${this.formatBytes(fileData.originalSize)} ${targetSizeDisplay}
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="remove-file-btn" data-action="remove" data-file-id="${fileData.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span class="progress-status">${statusText}</span>
+                    <span class="progress-percentage">${progressWidth}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressWidth}%"></div>
+                </div>
+            </div>
+            ${fileData.status === 'completed' ? `
                 <div class="compression-results">
                     <div class="result-item">
                         <div class="result-label">Original Size</div>
