@@ -22,7 +22,7 @@
     <meta name="twitter:image" content="https://www.mindbrust.com/assets/images/logo.svg">
 
     <link rel="stylesheet" href="css/styles.css?v=1.0.0">
-    <link rel="stylesheet" href="css/image-compressor.css?v=1.0.0">
+    <link rel="stylesheet" href="css/image-compressor.css?v=1.0.1">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -64,7 +64,7 @@
             <div class="compressor-hero">
                 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">Image Compressor</h1>
-                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Reduce file size to a target KB with minimal quality loss</p>
+                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Smart compression with multiple modes for perfect results</p>
                 </div>
             </div>
 
@@ -98,13 +98,38 @@
                         <div id="settings-section" class="settings-section">
                             <h3 class="settings-title">Compression Settings</h3>
                             <div class="settings-grid">
+                                <!-- Compression Mode Selector -->
                                 <div class="setting-item">
+                                    <label class="setting-label">
+                                        Compression Mode
+                                        <span class="setting-hint">Choose how to apply compression to multiple files</span>
+                                    </label>
+                                    <select id="compression-mode" class="setting-select">
+                                        <option value="uniform">Uniform - Same target size for all</option>
+                                        <option value="proportional">Proportional - Reduce by percentage</option>
+                                        <option value="individual">Individual - Smart size per file</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Target Size Input (for Uniform mode) -->
+                                <div class="setting-item" id="target-size-setting">
                                     <label class="setting-label">Target File Size (KB)</label>
                                     <div class="setting-input-group">
                                         <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000" placeholder="Enter target size">
                                         <span class="setting-unit">KB</span>
                                     </div>
                                 </div>
+                                
+                                <!-- Percentage Input (for Proportional mode, initially hidden) -->
+                                <div class="setting-item hidden" id="percentage-setting">
+                                    <label class="setting-label">Reduction Percentage (%)</label>
+                                    <div class="setting-input-group">
+                                        <input type="number" id="reduction-percentage" class="setting-input" value="50" min="10" max="90" placeholder="Enter percentage">
+                                        <span class="setting-unit">%</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Output Format Selector -->
                                 <div class="setting-item">
                                     <label class="setting-label">Output Format</label>
                                     <select id="output-format" class="setting-select">
@@ -115,6 +140,10 @@
                                     </select>
                                 </div>
                             </div>
+                            
+                            <!-- Mode Info Display -->
+                            <div id="mode-info" class="mode-info hidden"></div>
+                            
                             <button id="compress-all-btn" class="compress-button" disabled>
                                 <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <circle cx="12" cy="12" r="10"></circle>
@@ -156,8 +185,8 @@
                         </div>
                         <div class="step-item">
                             <div class="step-number">2</div>
-                            <h3 class="step-title">Set Target Size</h3>
-                            <p class="step-description">Use our recommended size or enter your desired file size in KB</p>
+                            <h3 class="step-title">Choose Mode</h3>
+                            <p class="step-description">Select compression mode: Uniform, Proportional, or Individual</p>
                         </div>
                         <div class="step-item">
                             <div class="step-number">3</div>
@@ -175,6 +204,30 @@
                     <div class="faq-container">
                         <div class="faq-item">
                             <button class="faq-question">
+                                <span>What are the different compression modes?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p><strong>Uniform:</strong> Applies the same target size to all images. Best for similar-sized images.<br>
+                                <strong>Proportional:</strong> Reduces each image by a percentage. Maintains relative size differences.<br>
+                                <strong>Individual:</strong> Automatically calculates optimal size for each image based on its original size. Perfect for mixed file sizes.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Which mode should I use for mixed file sizes?</span>
+                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Use <strong>Individual mode</strong> when you have images with very different sizes (e.g., 1MB and 50KB files). This mode intelligently compresses each image based on its original size, ensuring optimal quality for all images.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
                                 <span>What image formats are supported?</span>
                                 <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <polyline points="6,9 12,15 18,9"></polyline>
@@ -182,17 +235,6 @@
                             </button>
                             <div class="faq-answer">
                                 <p>We support JPG, JPEG, PNG, WEBP, and AVIF image formats. Our tool can compress these formats while maintaining maximum quality.</p>
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>How does the intelligent compression work?</span>
-                                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <polyline points="6,9 12,15 18,9"></polyline>
-                                </svg>
-                            </button>
-                            <div class="faq-answer">
-                                <p>Our intelligent algorithm analyzes your images and recommends optimal compression sizes. It prevents illogical compression ratios that would severely impact quality, ensuring the best balance between file size and visual quality.</p>
                             </div>
                         </div>
                         <div class="faq-item">
@@ -208,13 +250,13 @@
                         </div>
                         <div class="faq-item">
                             <button class="faq-question">
-                                <span>What if I set an unrealistic target size?</span>
+                                <span>Can I recompress images after changing settings?</span>
                                 <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <polyline points="6,9 12,15 18,9"></polyline>
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Our smart validation system will warn you if the target size is too large (not logical) or too small (would severely impact quality). We recommend compression sizes that maintain good visual quality while achieving significant file size reduction.</p>
+                                <p>Absolutely! Changing the target size, percentage, or compression mode automatically resets the files for recompression. Just click the compress button again with your new settings.</p>
                             </div>
                         </div>
                         <div class="faq-item">
@@ -225,7 +267,7 @@
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Absolutely! You can select multiple images and compress them all with the same settings. Use the "Download All" feature to get a zip file with all compressed images.</p>
+                                <p>Yes! You can select multiple images and compress them all at once. Use the "Download All" feature to get a zip file with all compressed images.</p>
                             </div>
                         </div>
                     </div>
@@ -243,7 +285,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="js/image-compressor.js?v=1.0.0"></script>
+    <script src="js/image-compressor.js?v=1.0.1"></script>
 </body>
 
 </html>

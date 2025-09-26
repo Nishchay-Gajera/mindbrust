@@ -1,6 +1,6 @@
 /**
- * Advanced Image Compressor
- * Handles client-side image compression to target file sizes
+ * Advanced Image Compressor with Multiple Compression Modes
+ * Version 1.0.1 - Fixed recompression and bulk compression issues
  */
 
 class ImageCompressor {
@@ -18,14 +18,17 @@ class ImageCompressor {
         this.messageBox = null;
         this.canvas = null;
         this.ctx = null;
+        this.compressionModeSelect = null;
+        this.reductionPercentageInput = null;
 
         // State
         this.files = [];
         this.processedFiles = [];
         this.supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
         this.isProcessing = false;
+        this.compressionMode = 'uniform'; // 'uniform' or 'proportional' or 'individual'
 
-        console.log('ImageCompressor initialized'); // Debug log
+        console.log('ImageCompressor v1.0.1 initialized');
         this.init();
     }
 
@@ -91,7 +94,7 @@ class ImageCompressor {
     }
 
     getElements() {
-        console.log('Getting DOM elements...'); // Debug log
+        console.log('Getting DOM elements...');
         
         this.uploadArea = document.getElementById('upload-area');
         this.fileInput = document.getElementById('file-input');
@@ -104,12 +107,8 @@ class ImageCompressor {
         this.downloadAllBtn = document.getElementById('download-all-btn');
         this.messageBox = document.getElementById('message-box');
         this.canvas = document.getElementById('compression-canvas');
-        
-        // Debug logs to check if elements are found
-        console.log('Upload area found:', !!this.uploadArea);
-        console.log('File input found:', !!this.fileInput);
-        console.log('Compress button found:', !!this.compressAllBtn);
-        console.log('Settings section found:', !!this.settingsSection);
+        this.compressionModeSelect = document.getElementById('compression-mode');
+        this.reductionPercentageInput = document.getElementById('reduction-percentage');
         
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
@@ -120,13 +119,57 @@ class ImageCompressor {
     }
 
     setupEventListeners() {
+        // Compression mode change
+        if (this.compressionModeSelect) {
+            this.compressionModeSelect.addEventListener('change', (e) => {
+                this.compressionMode = e.target.value;
+                const targetSetting = document.getElementById('target-size-setting');
+                const percentageSetting = document.getElementById('percentage-setting');
+                const modeInfo = document.getElementById('mode-info');
+                
+                if (this.compressionMode === 'proportional') {
+                    targetSetting.classList.add('hidden');
+                    percentageSetting.classList.remove('hidden');
+                    this.updateProportionalInfo();
+                } else if (this.compressionMode === 'individual') {
+                    targetSetting.classList.add('hidden');
+                    percentageSetting.classList.add('hidden');
+                    this.showIndividualModeInfo();
+                } else {
+                    targetSetting.classList.remove('hidden');
+                    percentageSetting.classList.add('hidden');
+                    modeInfo.classList.add('hidden');
+                    this.updateRecommendedSize();
+                }
+
+                // Reset all file statuses to allow recompression
+                this.resetFileStatuses();
+            });
+        }
+
+        // Target size change - reset file statuses
+        if (this.targetSizeInput) {
+            this.targetSizeInput.addEventListener('change', () => {
+                this.resetFileStatuses();
+            });
+        }
+
+        // Percentage change - reset file statuses
+        if (this.reductionPercentageInput) {
+            this.reductionPercentageInput.addEventListener('change', () => {
+                this.resetFileStatuses();
+                if (this.compressionMode === 'proportional') {
+                    this.updateProportionalInfo();
+                }
+            });
+        }
+
         // File input change
         if (this.fileInput) {
             this.fileInput.addEventListener('change', (e) => {
-                console.log('File input change event triggered'); // Debug log
+                console.log('File input change event triggered');
                 if (e.target.files && e.target.files.length > 0) {
                     this.handleFiles(e.target.files);
-                    // Clear the input value to allow selecting the same files again
                     e.target.value = '';
                 }
             });
@@ -148,20 +191,18 @@ class ImageCompressor {
                 e.preventDefault();
                 e.stopPropagation();
                 this.uploadArea.classList.remove('dragover');
-                console.log('Drop event triggered'); // Debug log
+                console.log('Drop event triggered');
                 if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                     this.handleFiles(e.dataTransfer.files);
                 }
             });
 
-            // Click to upload - but prevent double triggering
             this.uploadArea.addEventListener('click', (e) => {
-                // Don't trigger if the click is on the file input itself
                 if (e.target === this.fileInput) {
                     return;
                 }
                 
-                console.log('Upload area clicked'); // Debug log
+                console.log('Upload area clicked');
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -175,7 +216,7 @@ class ImageCompressor {
         if (this.compressAllBtn) {
             this.compressAllBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Compress button clicked, files count:', this.files.length); // Debug log
+                console.log('Compress button clicked, files count:', this.files.length);
                 this.compressAllFiles();
             });
         }
@@ -191,6 +232,78 @@ class ImageCompressor {
         if (this.fileList) {
             this.fileList.addEventListener('click', (e) => this.handleFileAction(e));
         }
+    }
+
+    resetFileStatuses() {
+        // Reset all file statuses to allow recompression
+        this.files.forEach(file => {
+            if (file.status === 'completed') {
+                file.status = 'pending';
+                file.progress = 0;
+            }
+        });
+        
+        // Update UI to reflect reset
+        if (this.files.length > 0) {
+            this.renderFileList();
+            this.compressAllBtn.disabled = false;
+            this.compressAllBtn.innerHTML = `
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="16,12 12,8 8,12"></polyline>
+                    <line x1="12" y1="16" x2="12" y2="8"></line>
+                </svg>
+                Compress All Images
+            `;
+        }
+    }
+
+    showIndividualModeInfo() {
+        const modeInfo = document.getElementById('mode-info');
+        if (!modeInfo) return;
+        
+        modeInfo.classList.remove('hidden');
+        modeInfo.innerHTML = `
+            <div class="mode-info-content">
+                <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                <div class="mode-info-text">
+                    <strong>Smart Individual Compression</strong>
+                    <br><small>Each image will be compressed to an optimal size based on its original dimensions and file size.</small>
+                </div>
+            </div>
+        `;
+    }
+
+    updateProportionalInfo() {
+        const modeInfo = document.getElementById('mode-info');
+        if (!modeInfo || this.files.length === 0) return;
+
+        const percentage = parseInt(this.reductionPercentageInput.value);
+        let totalOriginalSize = 0;
+        this.files.forEach(file => {
+            totalOriginalSize += file.originalSize;
+        });
+        
+        const avgSize = Math.round(totalOriginalSize / this.files.length / 1024);
+        const expectedSize = Math.round(avgSize * (1 - percentage / 100));
+
+        modeInfo.classList.remove('hidden');
+        modeInfo.innerHTML = `
+            <div class="mode-info-content">
+                <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <point cx="12" cy="17" rx="0.01" ry="0.01"></point>
+                </svg>
+                <div class="mode-info-text">
+                    <strong>Proportional Reduction:</strong> ${percentage}% smaller
+                    <br><small>Average: ${avgSize}KB → ~${expectedSize}KB per image</small>
+                </div>
+            </div>
+        `;
     }
 
     setupFAQ() {
@@ -218,16 +331,16 @@ class ImageCompressor {
     }
 
     handleFiles(files) {
-        console.log('handleFiles called with:', files.length, 'files'); // Debug log
+        console.log('handleFiles called with:', files.length, 'files');
         
         const fileArray = Array.from(files);
         const validFiles = fileArray.filter(file => {
-            console.log('Checking file:', file.name, 'Type:', file.type); // Debug log
+            console.log('Checking file:', file.name, 'Type:', file.type);
             return this.supportedFormats.includes(file.type);
         });
         const invalidFiles = fileArray.filter(file => !this.supportedFormats.includes(file.type));
 
-        console.log('Valid files:', validFiles.length, 'Invalid files:', invalidFiles.length); // Debug log
+        console.log('Valid files:', validFiles.length, 'Invalid files:', invalidFiles.length);
 
         if (invalidFiles.length > 0) {
             const invalidNames = invalidFiles.map(f => f.name).join(', ');
@@ -248,25 +361,34 @@ class ImageCompressor {
             progress: 0,
             compressedBlob: null,
             compressedSize: 0,
-            compressionRatio: 0
+            compressionRatio: 0,
+            individualTargetSize: null
         }));
 
         this.files = [...this.files, ...newFiles];
-        console.log('Total files after adding:', this.files.length); // Debug log
+        console.log('Total files after adding:', this.files.length);
         
         this.updateUI();
         this.showMessage(`${validFiles.length} file(s) added successfully.`, 'success');
     }
 
     updateUI() {
-        // Settings section is always visible now
         this.settingsSection.classList.remove('hidden');
         
         if (this.files.length > 0) {
             this.fileListSection.classList.remove('hidden');
             this.renderFileList();
-            this.updateRecommendedSize();
-            // Enable compress button when files are uploaded
+            
+            // Update info based on mode
+            if (this.compressionMode === 'proportional') {
+                this.updateProportionalInfo();
+            } else if (this.compressionMode === 'individual') {
+                this.showIndividualModeInfo();
+            } else {
+                this.updateRecommendedSize();
+            }
+            
+            // Enable compress button
             this.compressAllBtn.disabled = false;
             this.compressAllBtn.innerHTML = `
                 <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -278,7 +400,6 @@ class ImageCompressor {
             `;
         } else {
             this.fileListSection.classList.add('hidden');
-            // Disable compress button when no files
             this.compressAllBtn.disabled = true;
             this.compressAllBtn.innerHTML = `
                 <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -294,41 +415,29 @@ class ImageCompressor {
     updateRecommendedSize() {
         if (this.files.length === 0) return;
         
-        // Calculate recommended compression size based on uploaded files
         let totalOriginalSize = 0;
-        let averageSize = 0;
-        
         this.files.forEach(file => {
             totalOriginalSize += file.originalSize;
         });
         
-        averageSize = totalOriginalSize / this.files.length;
+        const averageSize = totalOriginalSize / this.files.length;
+        let recommendedSize = Math.round((averageSize * 0.65) / 1024);
         
-        // Calculate recommended size (compress to 60-70% of average for quality preservation)
-        let recommendedSize = Math.round((averageSize * 0.65) / 1024); // Convert to KB
-        
-        // Set minimum recommended size based on image complexity
         if (recommendedSize < 20) recommendedSize = 20;
         if (recommendedSize > 500) recommendedSize = Math.round(averageSize * 0.8 / 1024);
         
-        // Update the input with recommended value
         this.targetSizeInput.value = recommendedSize;
         this.targetSizeInput.placeholder = `Recommended: ${recommendedSize}KB`;
         
-        // Show recommendation message
         this.showRecommendation(recommendedSize, Math.round(averageSize / 1024));
     }
 
     showRecommendation(recommendedKB, averageKB) {
-        // Create or update recommendation message
-        let recommendationDiv = document.getElementById('size-recommendation');
+        let recommendationDiv = document.querySelector('#target-size-setting .size-recommendation');
         
         if (!recommendationDiv) {
             recommendationDiv = document.createElement('div');
-            recommendationDiv.id = 'size-recommendation';
             recommendationDiv.className = 'size-recommendation';
-            
-            // Insert after the target size input group
             const inputGroup = this.targetSizeInput.closest('.setting-item');
             inputGroup.appendChild(recommendationDiv);
         }
@@ -346,6 +455,29 @@ class ImageCompressor {
                 </div>
             </div>
         `;
+    }
+
+    calculateIndividualTargetSize(file) {
+        const originalSizeKB = file.originalSize / 1024;
+        let targetSizeKB;
+
+        if (originalSizeKB < 50) {
+            targetSizeKB = Math.round(originalSizeKB * 0.85);
+        } else if (originalSizeKB < 200) {
+            targetSizeKB = Math.round(originalSizeKB * 0.65);
+        } else if (originalSizeKB < 500) {
+            targetSizeKB = Math.round(originalSizeKB * 0.55);
+        } else if (originalSizeKB < 1000) {
+            targetSizeKB = Math.round(originalSizeKB * 0.45);
+        } else if (originalSizeKB < 3000) {
+            targetSizeKB = Math.round(originalSizeKB * 0.35);
+        } else {
+            targetSizeKB = Math.round(originalSizeKB * 0.25);
+            targetSizeKB = Math.max(targetSizeKB, 500);
+        }
+
+        targetSizeKB = Math.max(targetSizeKB, 10);
+        return targetSizeKB * 1024;
     }
 
     renderFileList() {
@@ -369,37 +501,17 @@ class ImageCompressor {
         const compressionRatio = fileData.compressionRatio || 0;
         const qualityClass = this.getQualityClass(compressionRatio);
 
+        let targetSizeDisplay = '';
+        if (this.compressionMode === 'individual' && fileData.individualTargetSize) {
+            targetSizeDisplay = `<span class="target-size-badge">Target: ${this.formatBytes(fileData.individualTargetSize)}</span>`;
+        }
+
         card.innerHTML = `
             <div class="file-header">
                 <div class="file-info">
                     <div class="file-name" title="${fileData.file.name}">${fileData.file.name}</div>
                     <div class="file-details">
-                        ${this.formatBytes(fileData.originalSize)} 
-                        ${fileData.compressedSize > 0 ? `→ ${this.formatBytes(fileData.compressedSize)}` : ''}
-                        ${compressionRatio > 0 ? `<span class="quality-indicator ${qualityClass}">${compressionRatio}% reduction</span>` : ''}
-                    </div>
-                </div>
-                <div class="file-actions">
-                    <button class="remove-file-btn" data-action="remove" data-file-id="${fileData.id}" title="Remove file">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span class="progress-status">${statusText}</span>
-                    <span class="progress-percentage">${Math.round(progressWidth)}%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progressWidth}%"></div>
-                </div>
-            </div>
-            
-            ${fileData.status === 'completed' ? `
+                        ${fileData.status === 'completed' ? `
                 <div class="compression-results">
                     <div class="result-item">
                         <div class="result-label">Original Size</div>
@@ -459,55 +571,40 @@ class ImageCompressor {
             return;
         }
 
-        const targetSize = parseInt(this.targetSizeInput.value) * 1024; // Convert KB to bytes
-        if (targetSize <= 0) {
-            this.showMessage('Please enter a valid target size.', 'error');
-            return;
-        }
+        let targetSize = null;
+        let reductionPercentage = null;
 
-        // Validate logical compression for each file
-        const invalidFiles = [];
-        this.files.forEach(file => {
-            const compressionRatio = targetSize / file.originalSize;
-            // If trying to compress to more than 98% of original size, it's not very logical
-            if (compressionRatio > 0.98) {
-                invalidFiles.push({
-                    name: file.file.name,
-                    originalKB: Math.round(file.originalSize / 1024),
-                    targetKB: Math.round(targetSize / 1024),
-                    issue: 'too_large'
-                });
+        // Get compression parameters based on mode
+        if (this.compressionMode === 'uniform') {
+            targetSize = parseInt(this.targetSizeInput.value) * 1024;
+            if (targetSize <= 0) {
+                this.showMessage('Please enter a valid target size.', 'error');
+                return;
             }
-            // If trying to compress to less than 5% of original size, warn about potential quality issues
-            else if (compressionRatio < 0.05) {
-                invalidFiles.push({
-                    name: file.file.name,
-                    originalKB: Math.round(file.originalSize / 1024),
-                    targetKB: Math.round(targetSize / 1024),
-                    issue: 'very_aggressive'
-                });
-            }
-        });
 
-        if (invalidFiles.length > 0) {
-            const tooLarge = invalidFiles.filter(f => f.issue === 'too_large');
-            const veryAggressive = invalidFiles.filter(f => f.issue === 'very_aggressive');
-            
-            let errorMessage = '';
-            if (tooLarge.length > 0) {
-                errorMessage += `⚠️ Target size too close to original for: ${tooLarge.map(f => `${f.name} (${f.originalKB}KB)`).join(', ')}.\n`;
-            }
-            if (veryAggressive.length > 0) {
-                errorMessage += `⚠️ Very aggressive compression requested for: ${veryAggressive.map(f => `${f.name} (${f.originalKB}KB→${f.targetKB}KB)`).join(', ')}.\n`;
-                errorMessage += 'This may significantly affect image quality. Continue anyway?\n';
+            // Check for mixed file sizes
+            const sizes = this.files.map(f => f.originalSize);
+            const maxSize = Math.max(...sizes);
+            const minSize = Math.min(...sizes);
+            const sizeRatio = maxSize / minSize;
+
+            if (sizeRatio > 10 && this.files.length > 1) {
+                const message = `Your files have very different sizes (${this.formatBytes(minSize)} to ${this.formatBytes(maxSize)}). Individual mode is recommended for better results.`;
+                this.showMessage(message, 'warning');
                 
-                // For very aggressive compression, ask for confirmation but don't block
-                const confirmed = confirm(errorMessage + '\nClick OK to proceed or Cancel to adjust the target size.');
-                if (!confirmed) {
+                if (confirm('Would you like to switch to Individual compression mode for better results?')) {
+                    this.compressionModeSelect.value = 'individual';
+                    this.compressionMode = 'individual';
+                    document.getElementById('target-size-setting').classList.add('hidden');
+                    document.getElementById('percentage-setting').classList.add('hidden');
+                    this.showIndividualModeInfo();
                     return;
                 }
-            } else if (tooLarge.length > 0) {
-                this.showMessage(errorMessage + 'Please set a smaller target size for meaningful compression.', 'error');
+            }
+        } else if (this.compressionMode === 'proportional') {
+            reductionPercentage = parseInt(this.reductionPercentageInput.value);
+            if (reductionPercentage <= 0 || reductionPercentage > 90) {
+                this.showMessage('Please enter a valid reduction percentage (10-90%).', 'error');
                 return;
             }
         }
@@ -524,9 +621,18 @@ class ImageCompressor {
 
         try {
             for (const fileData of this.files) {
-                if (fileData.status !== 'completed') {
-                    await this.compressFile(fileData, targetSize);
+                // Calculate target size based on mode
+                let fileTargetSize;
+                if (this.compressionMode === 'uniform') {
+                    fileTargetSize = targetSize;
+                } else if (this.compressionMode === 'proportional') {
+                    fileTargetSize = Math.round(fileData.originalSize * (1 - reductionPercentage / 100));
+                } else if (this.compressionMode === 'individual') {
+                    fileTargetSize = this.calculateIndividualTargetSize(fileData);
+                    fileData.individualTargetSize = fileTargetSize;
                 }
+
+                await this.compressFile(fileData, fileTargetSize);
                 completedCount++;
                 this.updateProgress(completedCount, totalFiles);
             }
@@ -556,11 +662,24 @@ class ImageCompressor {
     }
 
     async compressFile(fileData, targetSize) {
+        // Reset status for recompression
         fileData.status = 'processing';
         fileData.progress = 0;
+        fileData.compressedBlob = null;
+        fileData.compressedSize = 0;
+        fileData.compressionRatio = 0;
+        
         this.renderFileList();
 
         try {
+            const modeInfo = this.compressionMode === 'individual' 
+                ? `Individual: ${Math.round(targetSize/1024)}KB`
+                : this.compressionMode === 'proportional'
+                ? `Proportional: ${Math.round((1 - targetSize/fileData.originalSize)*100)}% reduction`
+                : `Uniform: ${Math.round(targetSize/1024)}KB`;
+            
+            console.log(`Compressing ${fileData.file.name} - ${modeInfo}`);
+            
             const result = await this.performCompression(fileData.file, targetSize);
             
             fileData.compressedBlob = result.blob;
@@ -586,7 +705,7 @@ class ImageCompressor {
             let result = await this.tryProfessionalCompression(file, targetSize);
             
             // If the result is not close enough to target, use iterative approach
-            if (Math.abs(result.blob.size - targetSize) > targetSize * 0.1) { // If more than 10% off
+            if (Math.abs(result.blob.size - targetSize) > targetSize * 0.1) {
                 console.log(`Professional library result (${Math.round(result.blob.size/1024)}KB) too far from target, using iterative approach...`);
                 result = await this.iterativeCompression(file, targetSize);
             }
@@ -600,11 +719,9 @@ class ImageCompressor {
     }
 
     async tryProfessionalCompression(file, targetSize) {
-        // Convert target size from bytes to MB for the library
         const targetSizeMB = targetSize / (1024 * 1024);
         const outputFormat = this.getOptimalFormat(file.type, targetSize, file.size);
         
-        // Configure compression options
         const options = {
             maxSizeMB: targetSizeMB,
             maxWidthOrHeight: 4096,
@@ -624,7 +741,6 @@ class ImageCompressor {
     async iterativeCompression(file, targetSize) {
         console.log('Using iterative compression for precise targeting...');
         
-        // Use canvas-based iterative approach for precise control
         return new Promise((resolve, reject) => {
             const img = new Image();
             const reader = new FileReader();
@@ -648,16 +764,14 @@ class ImageCompressor {
     }
 
     async preciseTargetCompression(img, originalFile, targetSize) {
-        // Set up canvas
         this.canvas.width = img.width;
         this.canvas.height = img.height;
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.imageSmoothingQuality = 'high';
 
         const mimeType = this.getOptimalFormat(originalFile.type, targetSize, originalFile.size);
-        const tolerance = targetSize * 0.05; // 5% tolerance
+        const tolerance = targetSize * 0.05;
 
-        // Binary search approach for quality
         let minQuality = 0.05;
         let maxQuality = 0.95;
         let bestBlob = null;
@@ -665,47 +779,39 @@ class ImageCompressor {
         let iterations = 0;
         const maxIterations = 15;
 
-        console.log(`Targeting ${Math.round(targetSize/1024)}KB with ${tolerance} bytes tolerance`);
+        console.log(`Targeting ${Math.round(targetSize/1024)}KB with ${Math.round(tolerance/1024)}KB tolerance`);
 
         while (iterations < maxIterations && Math.abs(maxQuality - minQuality) > 0.02) {
             const currentQuality = (minQuality + maxQuality) / 2;
             
-            // Clear and draw
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(img, 0, 0);
             
-            // Create blob
             const dataURL = this.canvas.toDataURL(mimeType, currentQuality);
             const blob = this.dataURLToBlob(dataURL);
             
             const difference = Math.abs(blob.size - targetSize);
             
-            console.log(`Iteration ${iterations + 1}: Quality ${Math.round(currentQuality*100)}% = ${Math.round(blob.size/1024)}KB (diff: ${Math.round(difference/1024)}KB)`);
-            
-            // Keep track of best result so far
             if (difference < bestDifference) {
                 bestDifference = difference;
                 bestBlob = blob;
             }
             
-            // Check if we're within tolerance
             if (difference <= tolerance) {
                 console.log(`✓ Hit target within tolerance! ${Math.round(blob.size/1024)}KB`);
                 return { blob: blob };
             }
             
-            // Adjust search range
             if (blob.size > targetSize) {
-                maxQuality = currentQuality; // Need lower quality
+                maxQuality = currentQuality;
             } else {
-                minQuality = currentQuality; // Can use higher quality
+                minQuality = currentQuality;
             }
             
             iterations++;
         }
 
-        // If binary search on quality didn't work well enough, try resizing
-        if (bestDifference > targetSize * 0.15) { // If still more than 15% off
+        if (bestDifference > targetSize * 0.15) {
             console.log('Quality adjustment insufficient, trying resize approach...');
             const resizeResult = await this.preciseResizeCompression(img, originalFile, targetSize, mimeType);
             if (resizeResult && Math.abs(resizeResult.blob.size - targetSize) < bestDifference) {
@@ -713,24 +819,19 @@ class ImageCompressor {
             }
         }
 
-        console.log(`Best result: ${Math.round(bestBlob.size/1024)}KB (${Math.round(bestDifference/1024)}KB from target)`);
+        console.log(`Best result: ${Math.round(bestBlob.size/1024)}KB`);
         return { blob: bestBlob };
     }
 
     async preciseResizeCompression(img, originalFile, targetSize, mimeType) {
         const tolerance = targetSize * 0.05;
-        
-        // Calculate approximate scale needed
         const compressionRatio = targetSize / originalFile.size;
         let currentScale = Math.sqrt(compressionRatio);
         currentScale = Math.max(0.2, Math.min(1.0, currentScale));
         
-        console.log(`Trying resize approach, starting scale: ${Math.round(currentScale*100)}%`);
-        
         let bestBlob = null;
         let bestDifference = Infinity;
         
-        // Try different scales
         const scaleVariations = [-0.1, 0, 0.05, 0.1, 0.15, 0.2, -0.05, -0.15];
         
         for (const variation of scaleVariations) {
@@ -738,7 +839,8 @@ class ImageCompressor {
             const newWidth = Math.floor(img.width * scale);
             const newHeight = Math.floor(img.height * scale);
             
-            // Create resize canvas
+            if (newWidth < 100 || newHeight < 100) continue;
+            
             const resizeCanvas = document.createElement('canvas');
             const resizeCtx = resizeCanvas.getContext('2d');
             resizeCanvas.width = newWidth;
@@ -747,7 +849,6 @@ class ImageCompressor {
             resizeCtx.imageSmoothingQuality = 'high';
             resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
             
-            // Try different qualities for this size
             const qualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4];
             
             for (const quality of qualities) {
@@ -767,47 +868,7 @@ class ImageCompressor {
             }
         }
         
-        if (bestBlob) {
-            console.log(`Best resize result: ${Math.round(bestBlob.size/1024)}KB`);
-            return { blob: bestBlob };
-        }
-        
-        return null;
-    }
-
-    getOptimalFormat(originalType, targetSize, originalSize) {
-        const compressionRatio = targetSize / originalSize;
-        const outputFormat = this.outputFormatSelect ? this.outputFormatSelect.value : 'same';
-        
-        if (outputFormat !== 'same') {
-            return outputFormat === 'jpeg' ? 'image/jpeg' : `image/${outputFormat}`;
-        }
-        
-        // Auto-select best format for compression
-        if (originalType === 'image/png' && compressionRatio < 0.8) {
-            return 'image/jpeg'; // Convert PNG to JPEG for better compression
-        }
-        
-        if (originalType === 'image/jpeg' || originalType === 'image/jpg') {
-            return 'image/jpeg';
-        }
-        
-        if (originalType === 'image/webp') {
-            return 'image/webp'; // WebP is already efficient
-        }
-        
-        // Default to JPEG for best compression
-        return 'image/jpeg';
-    }
-
-    getInitialQuality(targetSize, originalSize) {
-        const compressionRatio = targetSize / originalSize;
-        
-        if (compressionRatio > 0.8) return 0.9;        // Light compression
-        if (compressionRatio > 0.6) return 0.8;        // Moderate compression
-        if (compressionRatio > 0.4) return 0.7;        // Medium compression  
-        if (compressionRatio > 0.2) return 0.6;        // Heavy compression
-        return 0.4;                                     // Very heavy compression
+        return bestBlob ? { blob: bestBlob } : null;
     }
 
     async fallbackCanvasCompression(file, targetSize) {
@@ -820,18 +881,13 @@ class ImageCompressor {
             reader.onload = (e) => {
                 img.onload = () => {
                     try {
-                        // Set canvas dimensions
                         this.canvas.width = img.width;
                         this.canvas.height = img.height;
 
-                        // Determine output format
                         const mimeType = this.getOptimalFormat(file.type, targetSize, file.size);
-
-                        // Enable high-quality rendering
                         this.ctx.imageSmoothingEnabled = true;
                         this.ctx.imageSmoothingQuality = 'high';
 
-                        // Try different quality levels
                         const qualities = [0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
                         
                         for (const quality of qualities) {
@@ -848,31 +904,7 @@ class ImageCompressor {
                             }
                         }
 
-                        // If quality reduction didn't work, try resizing
-                        const scales = [0.9, 0.8, 0.7, 0.6, 0.5];
-                        for (const scale of scales) {
-                            const newWidth = Math.floor(img.width * scale);
-                            const newHeight = Math.floor(img.height * scale);
-                            
-                            this.canvas.width = newWidth;
-                            this.canvas.height = newHeight;
-                            this.ctx.clearRect(0, 0, newWidth, newHeight);
-                            this.ctx.drawImage(img, 0, 0, newWidth, newHeight);
-                            
-                            const dataURL = this.canvas.toDataURL(mimeType, 0.8);
-                            const blob = this.dataURLToBlob(dataURL);
-
-                            if (blob.size <= targetSize) {
-                                console.log(`Fallback success with scale ${Math.round(scale*100)}%: ${Math.round(blob.size/1024)}KB`);
-                                resolve({ blob: blob });
-                                return;
-                            }
-                        }
-
-                        // Last resort
-                        this.canvas.width = img.width;
-                        this.canvas.height = img.height;
-                        this.ctx.clearRect(0, 0, img.width, img.height);
+                        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                         this.ctx.drawImage(img, 0, 0);
                         const dataURL = this.canvas.toDataURL(mimeType, 0.1);
                         resolve({ blob: this.dataURLToBlob(dataURL) });
@@ -890,226 +922,37 @@ class ImageCompressor {
         });
     }
 
-    compressToTargetSize(img, originalFile, targetSize) {
-        // Set canvas dimensions
-        this.canvas.width = img.width;
-        this.canvas.height = img.height;
-
-        // Determine output format
-        const outputFormat = this.getOutputFormat(originalFile.type);
-        const mimeType = this.getMimeType(outputFormat);
-
-        // Enable high-quality rendering
-        this.ctx.imageSmoothingEnabled = true;
-        this.ctx.imageSmoothingQuality = 'high';
-
-        // Check if compression ratio is reasonable
-        const compressionRatio = targetSize / originalFile.size;
+    getOptimalFormat(originalType, targetSize, originalSize) {
+        const compressionRatio = targetSize / originalSize;
+        const outputFormat = this.outputFormatSelect ? this.outputFormatSelect.value : 'same';
         
-        console.log(`Compressing ${originalFile.name}: ${Math.round(originalFile.size/1024)}KB → ${Math.round(targetSize/1024)}KB (${Math.round(compressionRatio*100)}%)`);
-
-        // If target is larger than 90% of original, just apply minimal compression
-        if (compressionRatio > 0.9) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0);
-            const dataURL = this.canvas.toDataURL(mimeType, 0.85);
-            return { blob: this.dataURLToBlob(dataURL) };
+        if (outputFormat !== 'same') {
+            return outputFormat === 'jpeg' ? 'image/jpeg' : `image/${outputFormat}`;
         }
-
-        let bestBlob = null;
-        let bestQuality = 1.0;
-
-        // Start with different quality levels based on desired compression
-        let qualityLevels;
-        if (compressionRatio >= 0.7) {
-            qualityLevels = [0.9, 0.85, 0.8, 0.75, 0.7];
-        } else if (compressionRatio >= 0.4) {
-            qualityLevels = [0.8, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4];
-        } else {
-            qualityLevels = [0.6, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2];
+        
+        if (originalType === 'image/png' && compressionRatio < 0.8) {
+            return 'image/jpeg';
         }
-
-        // Try different quality levels
-        for (const quality of qualityLevels) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0);
-
-            const dataURL = this.canvas.toDataURL(mimeType, quality);
-            const blob = this.dataURLToBlob(dataURL);
-
-            console.log(`Quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
-
-            if (blob.size <= targetSize) {
-                bestBlob = blob;
-                bestQuality = quality;
-                console.log(`✓ Found suitable quality: ${Math.round(quality*100)}%`);
-                break;
-            }
+        
+        if (originalType === 'image/jpeg' || originalType === 'image/jpg') {
+            return 'image/jpeg';
         }
-
-        // If quality reduction alone didn't work, try resizing
-        if (!bestBlob) {
-            console.log('Quality reduction failed, trying resize...');
-            return this.compressWithSmartResize(img, originalFile, targetSize, mimeType, compressionRatio);
+        
+        if (originalType === 'image/webp') {
+            return 'image/webp';
         }
-
-        return { blob: bestBlob };
+        
+        return 'image/jpeg';
     }
 
-    createFallbackBlob(img, mimeType) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(img, 0, 0);
-        const dataURL = this.canvas.toDataURL(mimeType, 0.3);
-        return this.dataURLToBlob(dataURL);
-    }
-
-    compressWithSmartResize(img, originalFile, targetSize, mimeType, compressionRatio = null) {
-        console.log('Using smart resize compression...');
+    getInitialQuality(targetSize, originalSize) {
+        const compressionRatio = targetSize / originalSize;
         
-        let bestBlob = null;
-        
-        // If no compression ratio provided, calculate it
-        if (!compressionRatio) {
-            compressionRatio = targetSize / originalFile.size;
-        }
-
-        // Try quality reduction first, even for resize scenarios
-        const qualities = [0.7, 0.6, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1];
-        
-        for (const quality of qualities) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0);
-            
-            const dataURL = this.canvas.toDataURL(mimeType, quality);
-            const blob = this.dataURLToBlob(dataURL);
-
-            console.log(`Resize quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
-
-            if (blob.size <= targetSize) {
-                bestBlob = blob;
-                console.log(`✓ Found suitable quality: ${Math.round(quality*100)}%`);
-                break;
-            }
-        }
-
-        // If quality reduction still didn't work, try resizing
-        if (!bestBlob) {
-            console.log('Trying dimension reduction...');
-            
-            // Calculate scale based on compression ratio
-            let scale = Math.sqrt(compressionRatio);
-            scale = Math.max(scale, 0.3); // Don't go below 30% of original size
-            
-            const scaleSteps = [scale, scale * 0.95, scale * 0.9, scale * 0.85, scale * 0.8, scale * 0.75];
-            
-            for (const currentScale of scaleSteps) {
-                const newWidth = Math.floor(img.width * currentScale);
-                const newHeight = Math.floor(img.height * currentScale);
-
-                // Ensure reasonable minimum dimensions
-                if (newWidth < 100 || newHeight < 100) continue;
-
-                console.log(`Trying resize: ${newWidth}x${newHeight} (${Math.round(currentScale*100)}%)`);
-
-                // Create a temporary canvas for resizing
-                const resizeCanvas = document.createElement('canvas');
-                const resizeCtx = resizeCanvas.getContext('2d');
-                
-                resizeCanvas.width = newWidth;
-                resizeCanvas.height = newHeight;
-                
-                // Enable high-quality resizing
-                resizeCtx.imageSmoothingEnabled = true;
-                resizeCtx.imageSmoothingQuality = 'high';
-                resizeCtx.drawImage(img, 0, 0, newWidth, newHeight);
-
-                // Try different qualities with the resized image
-                const resizeQualities = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2];
-                
-                for (const quality of resizeQualities) {
-                    const dataURL = resizeCanvas.toDataURL(mimeType, quality);
-                    const blob = this.dataURLToBlob(dataURL);
-
-                    console.log(`Resize ${Math.round(currentScale*100)}% + Quality ${Math.round(quality*100)}%: ${Math.round(blob.size/1024)}KB`);
-
-                    if (blob.size <= targetSize) {
-                        bestBlob = blob;
-                        console.log(`✓ Found suitable combination: ${Math.round(currentScale*100)}% scale + ${Math.round(quality*100)}% quality`);
-                        break;
-                    }
-                }
-                
-                if (bestBlob) break;
-            }
-        }
-
-        // Absolute fallback
-        if (!bestBlob) {
-            console.log('Using fallback compression...');
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0);
-            
-            const dataURL = this.canvas.toDataURL(mimeType, 0.1);
-            bestBlob = this.dataURLToBlob(dataURL);
-            console.log(`Fallback result: ${Math.round(bestBlob.size/1024)}KB`);
-        }
-
-        return { blob: bestBlob };
-    }
-
-    stepDownResize(img, targetCanvas, targetCtx, targetWidth, targetHeight) {
-        // Step-down resizing for better quality
-        let currentCanvas = document.createElement('canvas');
-        let currentCtx = currentCanvas.getContext('2d');
-        
-        currentCanvas.width = img.width;
-        currentCanvas.height = img.height;
-        currentCtx.drawImage(img, 0, 0);
-
-        // Calculate steps
-        const widthRatio = targetWidth / img.width;
-        const heightRatio = targetHeight / img.height;
-        const steps = Math.max(1, Math.ceil(Math.log(Math.min(widthRatio, heightRatio)) / Math.log(0.5)));
-
-        for (let i = 0; i < steps; i++) {
-            const stepRatio = Math.pow(Math.min(widthRatio, heightRatio), (i + 1) / steps);
-            const stepWidth = Math.floor(img.width * stepRatio);
-            const stepHeight = Math.floor(img.height * stepRatio);
-
-            const stepCanvas = document.createElement('canvas');
-            const stepCtx = stepCanvas.getContext('2d');
-            
-            stepCanvas.width = stepWidth;
-            stepCanvas.height = stepHeight;
-            
-            stepCtx.imageSmoothingEnabled = true;
-            stepCtx.imageSmoothingQuality = 'high';
-            stepCtx.drawImage(currentCanvas, 0, 0, stepWidth, stepHeight);
-
-            currentCanvas = stepCanvas;
-            currentCtx = stepCtx;
-        }
-
-        // Final draw to target
-        targetCtx.drawImage(currentCanvas, 0, 0, targetWidth, targetHeight);
-    }
-
-    getOutputFormat(originalType) {
-        const format = this.outputFormatSelect.value;
-        if (format === 'same') {
-            return originalType.split('/')[1];
-        }
-        return format;
-    }
-
-    getMimeType(format) {
-        const mimeTypes = {
-            'jpeg': 'image/jpeg',
-            'jpg': 'image/jpeg',
-            'png': 'image/png',
-            'webp': 'image/webp'
-        };
-        return mimeTypes[format] || 'image/jpeg';
+        if (compressionRatio > 0.8) return 0.9;
+        if (compressionRatio > 0.6) return 0.8;
+        if (compressionRatio > 0.4) return 0.7;
+        if (compressionRatio > 0.2) return 0.6;
+        return 0.4;
     }
 
     dataURLToBlob(dataURL) {
@@ -1128,11 +971,10 @@ class ImageCompressor {
 
     updateProgress(completed, total) {
         const percentage = Math.round((completed / total) * 100);
-        // You can add a global progress indicator here if needed
+        // Global progress can be added here if needed
     }
 
     handleFileAction(e) {
-        // Find the button that was clicked
         const button = e.target.closest('button[data-action]');
         if (!button) return;
 
@@ -1189,8 +1031,11 @@ class ImageCompressor {
     getDownloadFileName(fileData) {
         const originalName = fileData.file.name;
         const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
-        const outputFormat = this.getOutputFormat(fileData.file.type);
-        return `${nameWithoutExt}_compressed.${outputFormat}`;
+        const outputFormat = this.outputFormatSelect.value;
+        const extension = outputFormat === 'same' 
+            ? originalName.substring(originalName.lastIndexOf('.') + 1)
+            : outputFormat;
+        return `${nameWithoutExt}_compressed.${extension}`;
     }
 
     async downloadAllFiles() {
