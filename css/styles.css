@@ -43,6 +43,83 @@ body {
 .hover\:bg-primary-dark:hover { background-color: var(--primary-dark) !important; }
 .hover\:text-primary:hover { color: var(--primary) !important; }
 
+/* CLEAN HEADER CSS - New Approach */
+
+/* Desktop Menu - Always visible on medium screens and up */
+.desktop-menu {
+    display: none; /* Hidden by default (mobile first) */
+}
+
+@media (min-width: 768px) {
+    .desktop-menu {
+        display: block !important; /* Show on desktop - !important to override any conflicts */
+    }
+}
+
+/* Mobile Menu Button - Only visible on mobile */
+.mobile-menu-button {
+    display: block; /* Visible by default (mobile first) */
+}
+
+@media (min-width: 768px) {
+    .mobile-menu-button {
+        display: none !important; /* Hide on desktop */
+    }
+}
+
+/* Mobile Menu Panel - Hidden by default, shown when toggled */
+.mobile-menu-panel {
+    display: none; /* Hidden by default */
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.mobile-menu-panel.show {
+    display: block; /* Show when toggled */
+}
+
+@media (min-width: 768px) {
+    .mobile-menu-panel {
+        display: none !important; /* Always hidden on desktop */
+    }
+}
+
+/* Navigation Link Styles */
+.nav-link {
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary);
+    transition: width 0.2s ease-in-out;
+}
+
+/* Ensure icons toggle properly */
+#hamburger-icon.hidden {
+    display: none;
+}
+
+#close-icon.hidden {
+    display: none;
+}
+
 /* Logo Styles */
 .logo {
     height: 3rem; /* 48px */
@@ -107,33 +184,7 @@ header, nav {
     z-index: 50;
 }
 
-.nav-link {
-    transition: all 0.2s ease-in-out;
-    position: relative;
-    color: #4b5563;
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    color: var(--primary);
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--primary);
-    transition: width 0.2s ease-in-out;
-}
-
-/* Mobile Menu */
+/* Mobile Menu - Remove previous styles that might conflict */
 .mobile-menu {
     transition: all 0.3s ease-in-out;
 }

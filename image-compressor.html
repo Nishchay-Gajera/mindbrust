@@ -5,24 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compress Image to Specific Size (KB) - Free Online Tool | Mindbrust</title>
-    <meta name="description" content="Easily compress JPG, PNG, WEBP, and AVIF images to a specific size like 100KB or 50KB online. Our free tool reduces file size with minimal quality loss.">
+    <meta name="description" content="Easily compress JPG, PNG, WEBP, and AVIF images using proportional or individual smart compression modes online. Our free tool reduces file size with minimal quality loss.">
     <meta name="keywords" content="image compressor, compress image, reduce file size, image optimization, JPG compressor, PNG compressor, WEBP compressor, AVIF compressor">
     
     <link rel="canonical" href="https://www.mindbrust.com/image-compressor.html">
     
-    <meta property="og:title" content="Free Image Compressor - Compress to Target Size | Mindbrust">
-    <meta property="og:description" content="Compress images to specific file sizes with minimal quality loss. Support for JPG, PNG, WEBP, and AVIF formats.">
+    <meta property="og:title" content="Free Image Compressor - Smart Compression Modes | Mindbrust">
+    <meta property="og:description" content="Compress images using proportional or individual modes with minimal quality loss. Support for JPG, PNG, WEBP, and AVIF formats.">
     <meta property="og:image" content="https://www.mindbrust.com/assets/images/logo.svg">
     <meta property="og:url" content="https://www.mindbrust.com/image-compressor.html">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Free Image Compressor - Compress to Target Size">
-    <meta name="twitter:description" content="Compress images to specific file sizes with minimal quality loss.">
+    <meta name="twitter:title" content="Free Image Compressor - Smart Compression Modes">
+    <meta name="twitter:description" content="Compress images using proportional or individual modes with minimal quality loss.">
     <meta name="twitter:image" content="https://www.mindbrust.com/assets/images/logo.svg">
 
-    <link rel="stylesheet" href="css/styles.css?v=1.0.0">
-    <link rel="stylesheet" href="css/image-compressor.css?v=1.0.1">
+    <link rel="stylesheet" href="css/styles.css?v=1.2.0">
+    <link rel="stylesheet" href="css/image-compressor.css?v=1.2.0">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -37,7 +37,7 @@
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Image Compressor",
-      "description": "Free online tool to compress images to specific file sizes",
+      "description": "Free online tool to compress images using smart compression modes",
       "url": "https://www.mindbrust.com/image-compressor.html",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
@@ -64,7 +64,7 @@
             <div class="compressor-hero">
                 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">Image Compressor</h1>
-                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Smart compression with multiple modes for perfect results</p>
+                    <p class="mt-4 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto">Smart compression with proportional and individual modes for perfect results</p>
                 </div>
             </div>
 
@@ -102,26 +102,16 @@
                                 <div class="setting-item">
                                     <label class="setting-label">
                                         Compression Mode
-                                        <span class="setting-hint">Choose how to apply compression to multiple files</span>
+                                        <span class="setting-hint">Choose how to apply compression to your files</span>
                                     </label>
                                     <select id="compression-mode" class="setting-select">
-                                        <option value="uniform">Uniform - Same target size for all</option>
                                         <option value="proportional">Proportional - Reduce by percentage</option>
                                         <option value="individual">Individual - Smart size per file</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Target Size Input (for Uniform mode) -->
-                                <div class="setting-item" id="target-size-setting">
-                                    <label class="setting-label">Target File Size (KB)</label>
-                                    <div class="setting-input-group">
-                                        <input type="number" id="target-size" class="setting-input" value="100" min="10" max="10000" placeholder="Enter target size">
-                                        <span class="setting-unit">KB</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Percentage Input (for Proportional mode, initially hidden) -->
-                                <div class="setting-item hidden" id="percentage-setting">
+                                <!-- Percentage Input (for Proportional mode) -->
+                                <div class="setting-item" id="percentage-setting">
                                     <label class="setting-label">Reduction Percentage (%)</label>
                                     <div class="setting-input-group">
                                         <input type="number" id="reduction-percentage" class="setting-input" value="50" min="10" max="90" placeholder="Enter percentage">
@@ -186,7 +176,7 @@
                         <div class="step-item">
                             <div class="step-number">2</div>
                             <h3 class="step-title">Choose Mode</h3>
-                            <p class="step-description">Select compression mode: Uniform, Proportional, or Individual</p>
+                            <p class="step-description">Select compression mode: Proportional or Individual</p>
                         </div>
                         <div class="step-item">
                             <div class="step-number">3</div>
@@ -210,8 +200,7 @@
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p><strong>Uniform:</strong> Applies the same target size to all images. Best for similar-sized images.<br>
-                                <strong>Proportional:</strong> Reduces each image by a percentage. Maintains relative size differences.<br>
+                                <p><strong>Proportional:</strong> Reduces each image by a percentage. Maintains relative size differences between files.<br>
                                 <strong>Individual:</strong> Automatically calculates optimal size for each image based on its original size. Perfect for mixed file sizes.</p>
                             </div>
                         </div>
@@ -256,7 +245,7 @@
                                 </svg>
                             </button>
                             <div class="faq-answer">
-                                <p>Absolutely! Changing the target size, percentage, or compression mode automatically resets the files for recompression. Just click the compress button again with your new settings.</p>
+                                <p>Absolutely! Changing the percentage or compression mode automatically resets the files for recompression. Just click the compress button again with your new settings.</p>
                             </div>
                         </div>
                         <div class="faq-item">
@@ -285,7 +274,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="js/image-compressor.js?v=1.0.1"></script>
+    <script src="js/image-compressor.js?v=1.2.0"></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 /**
- * Advanced Image Compressor with Multiple Compression Modes
- * Version 1.0.1 - Fixed recompression and bulk compression issues
+ * Advanced Image Compressor with Proportional and Individual Compression Modes
+ * Version 1.2.0 - Complete implementation with clean menu approach
  */
 
 class ImageCompressor {
@@ -11,7 +11,6 @@ class ImageCompressor {
         this.settingsSection = null;
         this.fileListSection = null;
         this.fileList = null;
-        this.targetSizeInput = null;
         this.outputFormatSelect = null;
         this.compressAllBtn = null;
         this.downloadAllBtn = null;
@@ -26,9 +25,9 @@ class ImageCompressor {
         this.processedFiles = [];
         this.supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
         this.isProcessing = false;
-        this.compressionMode = 'uniform'; // 'uniform' or 'proportional' or 'individual'
+        this.compressionMode = 'proportional'; // 'proportional' or 'individual' only
 
-        console.log('ImageCompressor v1.0.1 initialized');
+        console.log('ImageCompressor v1.2.0 initialized');
         this.init();
     }
 
@@ -59,8 +58,8 @@ class ImageCompressor {
             const footerHTML = await footerResponse.text();
             document.getElementById('footer-container').innerHTML = footerHTML;
 
-            // Initialize mobile menu
-            this.initializeMobileMenu();
+            // Initialize mobile menu with clean approach
+            this.initializeCleanMobileMenu();
 
         } catch (error) {
             console.error('Error loading components:', error);
@@ -68,7 +67,7 @@ class ImageCompressor {
         }
     }
 
-    initializeMobileMenu() {
+    initializeCleanMobileMenu() {
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
         const hamburgerIcon = document.getElementById('hamburger-icon');
@@ -76,13 +75,46 @@ class ImageCompressor {
 
         if (mobileMenuToggle && mobileMenu) {
             mobileMenuToggle.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-                hamburgerIcon.classList.toggle('hidden');
-                closeIcon.classList.toggle('hidden');
-                const isExpanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
-                mobileMenuToggle.setAttribute('aria-expanded', !isExpanded);
+                const isMenuOpen = mobileMenu.classList.contains('show');
+                
+                if (isMenuOpen) {
+                    // Close menu
+                    mobileMenu.classList.remove('show');
+                    hamburgerIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Open menu
+                    mobileMenu.classList.add('show');
+                    hamburgerIcon.classList.add('hidden');
+                    closeIcon.classList.remove('hidden');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const isClickInsideNav = event.target.closest('nav');
+                if (!isClickInsideNav && mobileMenu.classList.contains('show')) {
+                    mobileMenu.classList.remove('show');
+                    hamburgerIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close mobile menu on window resize if it gets too wide
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768 && mobileMenu.classList.contains('show')) {
+                    mobileMenu.classList.remove('show');
+                    hamburgerIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                }
             });
         }
+
+        console.log('Clean mobile menu initialized successfully');
     }
 
     getElements() {
@@ -93,7 +125,6 @@ class ImageCompressor {
         this.settingsSection = document.getElementById('settings-section');
         this.fileListSection = document.getElementById('file-list-section');
         this.fileList = document.getElementById('file-list');
-        this.targetSizeInput = document.getElementById('target-size');
         this.outputFormatSelect = document.getElementById('output-format');
         this.compressAllBtn = document.getElementById('compress-all-btn');
         this.downloadAllBtn = document.getElementById('download-all-btn');
@@ -115,33 +146,18 @@ class ImageCompressor {
         if (this.compressionModeSelect) {
             this.compressionModeSelect.addEventListener('change', (e) => {
                 this.compressionMode = e.target.value;
-                const targetSetting = document.getElementById('target-size-setting');
                 const percentageSetting = document.getElementById('percentage-setting');
                 const modeInfo = document.getElementById('mode-info');
                 
-                if (this.compressionMode === 'proportional') {
-                    targetSetting.classList.add('hidden');
-                    percentageSetting.classList.remove('hidden');
-                    this.updateProportionalInfo();
-                } else if (this.compressionMode === 'individual') {
-                    targetSetting.classList.add('hidden');
+                if (this.compressionMode === 'individual') {
                     percentageSetting.classList.add('hidden');
                     this.showIndividualModeInfo();
                 } else {
-                    targetSetting.classList.remove('hidden');
-                    percentageSetting.classList.add('hidden');
-                    modeInfo.classList.add('hidden');
-                    this.updateRecommendedSize();
+                    percentageSetting.classList.remove('hidden');
+                    this.updateProportionalInfo();
                 }
 
                 // Reset all file statuses to allow recompression
-                this.resetFileStatuses();
-            });
-        }
-
-        // Target size change - reset file statuses
-        if (this.targetSizeInput) {
-            this.targetSizeInput.addEventListener('change', () => {
                 this.resetFileStatuses();
             });
         }
@@ -372,12 +388,10 @@ class ImageCompressor {
             this.renderFileList();
             
             // Update info based on mode
-            if (this.compressionMode === 'proportional') {
-                this.updateProportionalInfo();
-            } else if (this.compressionMode === 'individual') {
+            if (this.compressionMode === 'individual') {
                 this.showIndividualModeInfo();
             } else {
-                this.updateRecommendedSize();
+                this.updateProportionalInfo();
             }
             
             // Enable compress button
@@ -402,51 +416,6 @@ class ImageCompressor {
                 Select Images to Enable Compression
             `;
         }
-    }
-
-    updateRecommendedSize() {
-        if (this.files.length === 0) return;
-        
-        let totalOriginalSize = 0;
-        this.files.forEach(file => {
-            totalOriginalSize += file.originalSize;
-        });
-        
-        const averageSize = totalOriginalSize / this.files.length;
-        let recommendedSize = Math.round((averageSize * 0.65) / 1024);
-        
-        if (recommendedSize < 20) recommendedSize = 20;
-        if (recommendedSize > 500) recommendedSize = Math.round(averageSize * 0.8 / 1024);
-        
-        this.targetSizeInput.value = recommendedSize;
-        this.targetSizeInput.placeholder = `Recommended: ${recommendedSize}KB`;
-        
-        this.showRecommendation(recommendedSize, Math.round(averageSize / 1024));
-    }
-
-    showRecommendation(recommendedKB, averageKB) {
-        let recommendationDiv = document.querySelector('#target-size-setting .size-recommendation');
-        
-        if (!recommendationDiv) {
-            recommendationDiv = document.createElement('div');
-            recommendationDiv.className = 'size-recommendation';
-            const inputGroup = this.targetSizeInput.closest('.setting-item');
-            inputGroup.appendChild(recommendationDiv);
-        }
-        
-        recommendationDiv.innerHTML = `
-            <div class="recommendation-content">
-                <svg class="recommendation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <point cx="12" cy="17" rx="0.01" ry="0.01"></point>
-                </svg>
-                <div class="recommendation-text">
-                    <strong>Recommended:</strong> ${recommendedKB}KB (Average original: ${averageKB}KB)
-                    <br><small>This size preserves quality while reducing file size significantly.</small>
-                </div>
-            </div>
-        `;
     }
 
     calculateIndividualTargetSize(file) {
@@ -556,12 +525,6 @@ class ImageCompressor {
         }
     }
 
-    getQualityClass(ratio) {
-        if (ratio >= 50) return 'excellent';
-        if (ratio >= 25) return 'good';
-        return 'fair';
-    }
-
     formatBytes(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -581,37 +544,10 @@ class ImageCompressor {
             return;
         }
 
-        let targetSize = null;
         let reductionPercentage = null;
 
         // Get compression parameters based on mode
-        if (this.compressionMode === 'uniform') {
-            targetSize = parseInt(this.targetSizeInput.value) * 1024;
-            if (targetSize <= 0) {
-                this.showMessage('Please enter a valid target size.', 'error');
-                return;
-            }
-
-            // Check for mixed file sizes
-            const sizes = this.files.map(f => f.originalSize);
-            const maxSize = Math.max(...sizes);
-            const minSize = Math.min(...sizes);
-            const sizeRatio = maxSize / minSize;
-
-            if (sizeRatio > 10 && this.files.length > 1) {
-                const message = `Your files have very different sizes (${this.formatBytes(minSize)} to ${this.formatBytes(maxSize)}). Individual mode is recommended for better results.`;
-                this.showMessage(message, 'warning');
-                
-                if (confirm('Would you like to switch to Individual compression mode for better results?')) {
-                    this.compressionModeSelect.value = 'individual';
-                    this.compressionMode = 'individual';
-                    document.getElementById('target-size-setting').classList.add('hidden');
-                    document.getElementById('percentage-setting').classList.add('hidden');
-                    this.showIndividualModeInfo();
-                    return;
-                }
-            }
-        } else if (this.compressionMode === 'proportional') {
+        if (this.compressionMode === 'proportional') {
             reductionPercentage = parseInt(this.reductionPercentageInput.value);
             if (reductionPercentage <= 0 || reductionPercentage > 90) {
                 this.showMessage('Please enter a valid reduction percentage (10-90%).', 'error');
@@ -633,9 +569,7 @@ class ImageCompressor {
             for (const fileData of this.files) {
                 // Calculate target size based on mode
                 let fileTargetSize;
-                if (this.compressionMode === 'uniform') {
-                    fileTargetSize = targetSize;
-                } else if (this.compressionMode === 'proportional') {
+                if (this.compressionMode === 'proportional') {
                     fileTargetSize = Math.round(fileData.originalSize * (1 - reductionPercentage / 100));
                 } else if (this.compressionMode === 'individual') {
                     fileTargetSize = this.calculateIndividualTargetSize(fileData);
@@ -684,9 +618,7 @@ class ImageCompressor {
         try {
             const modeInfo = this.compressionMode === 'individual' 
                 ? `Individual: ${Math.round(targetSize/1024)}KB`
-                : this.compressionMode === 'proportional'
-                ? `Proportional: ${Math.round((1 - targetSize/fileData.originalSize)*100)}% reduction`
-                : `Uniform: ${Math.round(targetSize/1024)}KB`;
+                : `Proportional: ${Math.round((1 - targetSize/fileData.originalSize)*100)}% reduction`;
             
             console.log(`Compressing ${fileData.file.name} - ${modeInfo}`);
             
