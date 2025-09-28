@@ -266,53 +266,55 @@ class ImageCompressor {
         }
     }
 
-    showIndividualModeInfo() {
-        const modeInfo = document.getElementById('mode-info');
-        if (!modeInfo) return;
-        
-        modeInfo.classList.remove('hidden');
-        modeInfo.innerHTML = `
-            <div class="mode-info-content">
-                <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 6v6l4 2"></path>
-                </svg>
-                <div class="mode-info-text">
-                    <strong>Smart Individual Compression</strong>
-                    <br><small>Each image will be compressed to an optimal size based on its original dimensions and file size.</small>
-                </div>
+    // Updated methods for better mode info display
+
+showIndividualModeInfo() {
+    const modeInfo = document.getElementById('mode-info');
+    if (!modeInfo) return;
+    
+    modeInfo.classList.remove('hidden');
+    modeInfo.innerHTML = `
+        <div class="mode-info-content">
+            <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+            </svg>
+            <div class="mode-info-text">
+                <strong>Smart Individual Compression</strong>
+                <small>Each image will be compressed to an optimal size based on its original dimensions and file size. Perfect for mixed file sizes.</small>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
 
-    updateProportionalInfo() {
-        const modeInfo = document.getElementById('mode-info');
-        if (!modeInfo || this.files.length === 0) return;
+updateProportionalInfo() {
+    const modeInfo = document.getElementById('mode-info');
+    if (!modeInfo || this.files.length === 0) return;
 
-        const percentage = parseInt(this.reductionPercentageInput.value);
-        let totalOriginalSize = 0;
-        this.files.forEach(file => {
-            totalOriginalSize += file.originalSize;
-        });
-        
-        const avgSize = Math.round(totalOriginalSize / this.files.length / 1024);
-        const expectedSize = Math.round(avgSize * (1 - percentage / 100));
+    const percentage = parseInt(this.reductionPercentageInput.value);
+    let totalOriginalSize = 0;
+    this.files.forEach(file => {
+        totalOriginalSize += file.originalSize;
+    });
+    
+    const avgSize = Math.round(totalOriginalSize / this.files.length / 1024);
+    const expectedSize = Math.round(avgSize * (1 - percentage / 100));
 
-        modeInfo.classList.remove('hidden');
-        modeInfo.innerHTML = `
-            <div class="mode-info-content">
-                <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <point cx="12" cy="17" rx="0.01" ry="0.01"></point>
-                </svg>
-                <div class="mode-info-text">
-                    <strong>Proportional Reduction:</strong> ${percentage}% smaller
-                    <br><small>Average: ${avgSize}KB → ~${expectedSize}KB per image</small>
-                </div>
+    modeInfo.classList.remove('hidden');
+    modeInfo.innerHTML = `
+        <div class="mode-info-content">
+            <svg class="mode-info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <point cx="12" cy="17" rx="0.01" ry="0.01"></point>
+            </svg>
+            <div class="mode-info-text">
+                <strong>Proportional Reduction: ${percentage}% smaller</strong>
+                <small>Average original size: ${avgSize}KB → Expected result: ~${expectedSize}KB per image</small>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
 
     setupFAQ() {
         const faqItems = document.querySelectorAll('.faq-item');
