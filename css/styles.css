@@ -52,7 +52,7 @@ body {
 
 @media (min-width: 768px) {
     .desktop-menu {
-        display: block !important; /* Show on desktop - !important to override any conflicts */
+        display: block !important; /* Show on desktop - !important to override conflicts */
     }
 }
 
@@ -113,13 +113,12 @@ body {
 
 /* Ensure icons toggle properly */
 #hamburger-icon.hidden {
-    display: none;
+    display: none !important;
 }
 
 #close-icon.hidden {
-    display: none;
+    display: none !important;
 }
-
 /* Logo Styles */
 .logo {
     height: 3rem; /* 48px */

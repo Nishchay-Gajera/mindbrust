@@ -1,3 +1,8 @@
+/**
+ * Universal Menu Handler for All Pages
+ * Add this to js/main.js or create a new js/menu.js file
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
     const loadComponents = async () => {
         try {
@@ -26,8 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeIcon = document.getElementById('close-icon');
 
         if (mobileMenuToggle && mobileMenu) {
-            mobileMenuToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
+            mobileMenuToggle.addEventListener('click', function() {
                 const isMenuOpen = mobileMenu.classList.contains('show');
                 
                 if (isMenuOpen) {
@@ -67,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        console.log('Mobile menu initialized successfully');
+        console.log('Universal menu initialized successfully');
     };
 
     loadComponents();
